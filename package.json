@@ -1,0 +1,21 @@
+{
+  "name": "pos-project",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "pnpm --parallel -r run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "db:up": "docker compose up -d mongo && sleep 3 && node scripts/init-replica.mjs",
+    "db:down": "docker compose down",
+    "db:seed": "pnpm --filter server run seed"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "argon2",
+      "esbuild"
+    ]
+  }
+}
