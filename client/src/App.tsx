@@ -6,6 +6,9 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Pos from "./pages/Pos";
+import PurchaseOrders from "./pages/PurchaseOrders";
+import PurchaseOrderForm from "./pages/PurchaseOrderForm";
+import PurchaseOrderDetail from "./pages/PurchaseOrderDetail";
 import { Toaster } from "react-hot-toast";
 
 function Placeholder({ name }: { name: string }) {
@@ -27,6 +30,9 @@ export default function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/inventory" element={<Placeholder name="Inventory" />} />
               <Route path="/sales" element={<Placeholder name="Sales" />} />
+              <Route path="/purchase-orders" element={<PurchaseOrders />} />
+              <Route path="/purchase-orders/new" element={<PurchaseOrderForm />} />
+              <Route path="/purchase-orders/:id" element={<PurchaseOrderDetail />} />
               <Route path="/purchases" element={<Placeholder name="Purchases" />} />
               <Route path="/transfers" element={<Placeholder name="Transfers" />} />
               <Route path="/reports" element={<Placeholder name="Reports" />} />

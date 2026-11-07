@@ -9,7 +9,7 @@ const adminLinks = [
   { to: "/products", label: "Products", icon: Package },
   { to: "/inventory", label: "Inventory", icon: Warehouse },
   { to: "/sales", label: "Sales", icon: ShoppingCart },
-  { to: "/purchases", label: "Purchases", icon: Truck },
+  { to: "/purchase-orders", label: "Purchases", icon: Truck },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/audit-log", label: "Audit Log", icon: ClipboardList },
@@ -22,7 +22,7 @@ const managerLinks = [
   { to: "/products", label: "Products", icon: Package },
   { to: "/inventory", label: "Inventory", icon: Warehouse },
   { to: "/sales", label: "Sales", icon: ShoppingCart },
-  { to: "/purchases", label: "Purchases", icon: Truck },
+  { to: "/purchase-orders", label: "Purchases", icon: Truck },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
   { to: "/reports", label: "Reports", icon: BarChart3 },
 ];

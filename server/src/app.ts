@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth";
 import productRouter from "./routes/products";
 import saleRouter from "./routes/sales";
+import purchaseOrderRouter from "./routes/purchaseOrders";
+import branchRouter from "./routes/branches";
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/sales", saleRouter);
+app.use("/api/v1/purchase-orders", purchaseOrderRouter);
+app.use("/api/v1/branches", branchRouter);
 
 app.get("/api/v1/health", (_req, res) => {
   res.json({ success: true, status: "ok" });
