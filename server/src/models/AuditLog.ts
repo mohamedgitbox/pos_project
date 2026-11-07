@@ -35,8 +35,10 @@ const auditLogSchema = new Schema<IAuditLog>({
       "PO_CANCELLED",
       "PO_DELETED",
       "RECEIVE",
+      "TRANSFER_CREATED",
       "TRANSFER_SHIP",
       "TRANSFER_RECEIVE",
+      "TRANSFER_CANCELLED",
     ],
   },
   entityType: {

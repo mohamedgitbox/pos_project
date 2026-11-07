@@ -8,7 +8,6 @@ interface Branch {
   _id: string;
   name: string;
 }
-
 interface Product {
   id: string;
   name: string;
@@ -105,18 +104,31 @@ export default function PurchaseOrderDetail() {
   };
 
   if (!canManage) {
-    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can view purchase orders.</div>;
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
+        Only ADMIN or MANAGER can view purchase orders.
+      </div>
+    );
   }
 
   if (loading) {
-    return <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">Loading purchase order...</div>;
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">
+        Loading purchase order...
+      </div>
+    );
   }
 
   if (!po) {
     return (
       <div className="space-y-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">Purchase order not found.</div>
-        <Link to="/purchase-orders" className="text-sm font-medium text-blue-600 hover:underline">
+        <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">
+          Purchase order not found.
+        </div>
+        <Link
+          to="/purchase-orders"
+          className="text-sm font-medium text-blue-600 hover:underline"
+        >
           Back to purchase orders
         </Link>
       </div>
@@ -131,14 +143,25 @@ export default function PurchaseOrderDetail() {
           <p className="text-sm text-gray-500">{po.supplierName}</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass(po.status)}`}>{po.status}</span>
-          <Link to="/purchase-orders" className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass(po.status)}`}
+          >
+            {po.status}
+          </span>
+          <Link
+            to="/purchase-orders"
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+          >
             Back
           </Link>
         </div>
       </div>
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && (
+        <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -150,7 +173,9 @@ export default function PurchaseOrderDetail() {
               </div>
               <div>
                 <div className="font-medium text-gray-500">Created At</div>
-                <div className="text-gray-900">{po.createdAt ? new Date(po.createdAt).toLocaleString() : "-"}</div>
+                <div className="text-gray-900">
+                  {po.createdAt ? new Date(po.createdAt).toLocaleString() : "-"}
+                </div>
               </div>
             </div>
           </div>
@@ -169,12 +194,22 @@ export default function PurchaseOrderDetail() {
                 {po.items.map((item) => (
                   <tr key={item._id}>
                     <td className="px-4 py-3">
-                      <div className="text-sm font-medium text-gray-900">{item.product.name}</div>
-                      <div className="text-xs text-gray-500">{item.product.SKU}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.product.name}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {item.product.SKU}
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.orderedQty}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{money(item.unitCost)}</td>
-                    <td className="px-4 py-3 text-right text-sm text-gray-900">{money(item.subtotal)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.orderedQty}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {money(item.unitCost)}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm text-gray-900">
+                      {money(item.subtotal)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -212,7 +247,9 @@ export default function PurchaseOrderDetail() {
             )}
 
             {(po.status === "RECEIVED" || po.status === "CANCELLED") && (
-              <p className="text-sm text-gray-500">No actions available for this status.</p>
+              <p className="text-sm text-gray-500">
+                No actions available for this status.
+              </p>
             )}
           </div>
         </div>
@@ -221,8 +258,13 @@ export default function PurchaseOrderDetail() {
       {confirmReceive && po.status === "ORDERED" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-sm space-y-4 rounded-xl bg-white p-5 shadow-xl">
-            <h2 className="text-lg font-semibold text-gray-900">Receive Purchase Order?</h2>
-            <p className="text-sm text-gray-600">This will increment inventory and update weighted-average cost. This action cannot be undone.</p>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Receive Purchase Order?
+            </h2>
+            <p className="text-sm text-gray-600">
+              This will increment inventory and update weighted-average cost.
+              This action cannot be undone.
+            </p>
             <div className="flex justify-end gap-2">
               <button
                 type="button"

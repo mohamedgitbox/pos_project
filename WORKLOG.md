@@ -14,7 +14,8 @@
   - Milestone 3 (POS checkout) is complete.
   - Milestone 3.5 (Adjust Stock) is complete.
   - Milestone 4 (Purchase Orders with weighted-average cost) is complete.
-- **Immediate next milestone:** Milestone 5 — Stock Transfers between branches.
+  - Milestone 5 (Stock Transfers between branches) is complete.
+- **Immediate next milestone:** Milestone 6 — Reports & Dashboard.
 
 ## 2. Tech Stack
 
@@ -112,6 +113,7 @@ Mounted backend routes:
 - `/api/v1/products`
 - `/api/v1/sales`
 - `/api/v1/purchase-orders`
+- `/api/v1/transfers`
 - `/api/v1/branches`
 - `/api/v1/health`
 
@@ -286,6 +288,40 @@ ORDERED -> CANCELLED
   - `/purchase-orders/:id`
 - Sidebar Purchases link now points to `/purchase-orders`.
 
+### M5 — Stock Transfers
+
+- Backend routes/controllers:
+  - `server/src/routes/transfers.ts`
+  - `server/src/controllers/transferQueryController.ts`
+  - `server/src/controllers/transferCreateController.ts`
+  - `server/src/controllers/transferStatusController.ts`
+- Endpoints:
+  - `GET /api/v1/transfers`
+  - `GET /api/v1/transfers/branch-stock/:branchId`
+  - `GET /api/v1/transfers/:id`
+  - `POST /api/v1/transfers`
+  - `PUT /api/v1/transfers/:id/status`
+- Workflow:
+  - Create starts `PENDING` and validates source stock without reserving it.
+  - `SHIP` transitions `PENDING -> IN_TRANSIT` and decrements source branch stock atomically.
+  - `RECEIVE` transitions `IN_TRANSIT -> RECEIVED` and increments destination branch stock atomically.
+  - `CANCEL` transitions `PENDING -> CANCELLED` without moving stock.
+- Concurrency:
+  - Create, ship, receive, and cancel run inside `session.withTransaction()`.
+  - Shipping uses existing `decrementStock()` with `$gte` guard to prevent negative stock races.
+- RBAC and branch scoping:
+  - Only ADMIN/MANAGER can access transfer APIs and screens.
+  - Non-admin users can only create/ship/cancel from their assigned source branch and receive at their assigned destination branch.
+- Frontend pages:
+  - `Transfers.tsx`: list with status filter and create button.
+  - `TransferForm.tsx`: source/destination branch selection, source branch stock loading, dynamic item rows, client-side quantity validation.
+  - `TransferDetail.tsx`: transfer metadata, item table, Ship/Receive/Cancel actions with confirmation.
+- Routes added:
+  - `/transfers`
+  - `/transfers/new`
+  - `/transfers/:id`
+- Seed now clears `StockTransfer` and `TransferItem` records.
+
 ## 5. Key Architecture Decisions
 
 - **Transactions:** POS checkout and PO receive use `session.withTransaction()`; MongoDB replica set (`rs0`) is required.
@@ -296,8 +332,8 @@ ORDERED -> CANCELLED
 - **CORS:** Backend allows `CLIENT_URL` (default `http://localhost:5173`) with credentials; `cookieParser()` and `express.json()` are mounted before routes.
 - **Client HTTP:** Axios uses `withCredentials:true`; 401 redirects to `/login` only when not already there to avoid loops.
 - **RBAC:** Server-side `requireRole(...)`; product/PO management is ADMIN/MANAGER; checkout allows ADMIN/MANAGER/CASHIER.
-- **Branch scoping:** Non-admin users are restricted to assigned branch for sales/POs where applicable; admin may select branch in POS.
-- **Audit logging:** Critical mutations write AuditLog entries: CHECKOUT, INVENTORY_ADJUST, PO_CREATED/ORDERED/RECEIVED/CANCELLED/DELETED.
+- **Branch scoping:** Non-admin users are restricted to assigned branch for sales/POs/transfers where applicable; admin may select branch in POS and transfers.
+- **Audit logging:** Critical mutations write AuditLog entries: CHECKOUT, INVENTORY_ADJUST, PO_CREATED/ORDERED/RECEIVED/CANCELLED/DELETED, TRANSFER_CREATED/SHIP/RECEIVE/CANCELLED.
 - **Counters:** Atomic `Counter.findOneAndUpdate($inc)` generates `INV-000001`, `PO-000001`, `TR-000001`.
 - **Validation:** Zod validates IDs, required fields, numeric quantities/prices, and status transitions.
 - **API envelope:** Success `{ success:true, data }`; failure `{ success:false, error, details? }`.
@@ -393,7 +429,7 @@ Important local URLs:
 
 ## 8. Current Known Gaps / Next Session Notes
 
-- Milestone 5 should implement Stock Transfers between branches.
+- Milestone 6 should implement Reports & Dashboard analytics.
 - SSE/change-stream real-time updates are planned but not implemented yet.
 - Reports and dashboard analytics are still mostly placeholder/static.
 - Users and Branches CRUD pages are not fully implemented yet.

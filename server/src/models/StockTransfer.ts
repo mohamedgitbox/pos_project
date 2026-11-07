@@ -1,11 +1,21 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export type TransferStatus = "PENDING" | "IN_TRANSIT" | "RECEIVED" | "CANCELLED";
+
 export interface IStockTransfer extends Document {
   transferNo: string;
   fromBranchId: mongoose.Types.ObjectId;
   toBranchId: mongoose.Types.ObjectId;
   initiatedBy: mongoose.Types.ObjectId;
-  status: string;
+  status: TransferStatus;
+  note?: string;
+  totalQuantity: number;
+  shippedBy?: mongoose.Types.ObjectId;
+  shippedAt?: Date;
+  receivedBy?: mongoose.Types.ObjectId;
+  receivedAt?: Date;
+  cancelledBy?: mongoose.Types.ObjectId;
+  cancelledAt?: Date;
   timestamp: Date;
 }
 
@@ -44,6 +54,39 @@ const stockTransferSchema = new Schema<IStockTransfer>(
       required: true,
       enum: ["PENDING", "IN_TRANSIT", "RECEIVED", "CANCELLED"],
       default: "PENDING",
+      index: true,
+    },
+    note: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+    },
+    totalQuantity: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
+    },
+    shippedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    shippedAt: {
+      type: Date,
+    },
+    receivedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    receivedAt: {
+      type: Date,
+    },
+    cancelledBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    cancelledAt: {
+      type: Date,
     },
     timestamp: {
       type: Date,
@@ -53,6 +96,10 @@ const stockTransferSchema = new Schema<IStockTransfer>(
   },
   { timestamps: true }
 );
+
+stockTransferSchema.index({ fromBranchId: 1, status: 1 });
+stockTransferSchema.index({ toBranchId: 1, status: 1 });
+stockTransferSchema.index({ createdAt: -1 });
 
 const transferItemSchema = new Schema<ITransferItem>(
   {
@@ -76,6 +123,8 @@ const transferItemSchema = new Schema<ITransferItem>(
   },
   { timestamps: true }
 );
+
+transferItemSchema.index({ transferId: 1, productId: 1 }, { unique: true });
 
 export const StockTransfer = mongoose.model<IStockTransfer>("StockTransfer", stockTransferSchema);
 export const TransferItem = mongoose.model<ITransferItem>("TransferItem", transferItemSchema);

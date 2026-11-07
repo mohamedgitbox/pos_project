@@ -1,7 +1,7 @@
 import "dotenv/config";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { Branch, User, Product, Inventory, Counter } from "./models";
+import { Branch, User, Product, Inventory, Counter, StockTransfer, TransferItem } from "./models";
 
 async function seed() {
   const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/pos_project";
@@ -12,6 +12,8 @@ async function seed() {
     User.deleteMany({}),
     Product.deleteMany({}),
     Inventory.deleteMany({}),
+    TransferItem.deleteMany({}),
+    StockTransfer.deleteMany({}),
     Counter.deleteMany({}),
   ]);
 
