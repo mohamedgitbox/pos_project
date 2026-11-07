@@ -13,10 +13,12 @@ const adminLinks = [
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/audit-log", label: "Audit Log", icon: ClipboardList },
+  { to: "/pos", label: "POS", icon: Monitor },
 ];
 
 const managerLinks = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/pos", label: "POS", icon: Monitor },
   { to: "/products", label: "Products", icon: Package },
   { to: "/inventory", label: "Inventory", icon: Warehouse },
   { to: "/sales", label: "Sales", icon: ShoppingCart },
