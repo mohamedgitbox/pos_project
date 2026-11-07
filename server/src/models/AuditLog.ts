@@ -28,6 +28,7 @@ const auditLogSchema = new Schema<IAuditLog>({
       "LOGIN",
       "LOGOUT",
       "CHECKOUT",
+      "INVENTORY_ADJUST",
       "RECEIVE",
       "TRANSFER_SHIP",
       "TRANSFER_RECEIVE",

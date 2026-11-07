@@ -1,3 +1,4 @@
+import type { ClientSession } from "mongoose";
 import { Counter } from "../models";
 
 const prefixes: Record<string, string> = {
@@ -6,11 +7,14 @@ const prefixes: Record<string, string> = {
   transferNo: "TR-",
 };
 
-export async function getNextSequence(name: "invoiceNo" | "poNumber" | "transferNo"): Promise<string> {
+export async function getNextSequence(
+  name: "invoiceNo" | "poNumber" | "transferNo",
+  session?: ClientSession
+): Promise<string> {
   const counter = await Counter.findOneAndUpdate(
     { _id: name },
     { $inc: { seq: 1 } },
-    { new: true, upsert: true }
+    { new: true, upsert: true, session }
   );
 
   const prefix = prefixes[name] || "";
