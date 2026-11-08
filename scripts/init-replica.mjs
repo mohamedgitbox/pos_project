@@ -33,5 +33,3 @@ async function initReplica() {
 }
 
 initReplica();
-
-</content>

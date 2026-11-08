@@ -30,20 +30,24 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/branches" element={<Placeholder name="Branches" />} />
               <Route path="/users" element={<Placeholder name="Users" />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/inventory" element={<Placeholder name="Inventory" />} />
+              <Route element={<ProtectedRoute requiredRoles={["MANAGER", "ADMIN"]} />}>
+                <Route path="/products" element={<Products />} />
+                <Route path="/inventory" element={<Placeholder name="Inventory" />} />
+                <Route path="/purchase-orders" element={<PurchaseOrders />} />
+                <Route path="/purchase-orders/new" element={<PurchaseOrderForm />} />
+                <Route path="/purchase-orders/:id" element={<PurchaseOrderDetail />} />
+                <Route path="/purchases" element={<Placeholder name="Purchases" />} />
+                <Route path="/transfers" element={<Transfers />} />
+                <Route path="/transfers/new" element={<TransferForm />} />
+                <Route path="/transfers/:id" element={<TransferDetail />} />
+                <Route path="/reports" element={<Placeholder name="Reports" />} />
+                <Route path="/audit-log" element={<Placeholder name="Audit Log" />} />
+              </Route>
+              <Route element={<ProtectedRoute requiredRoles={["CASHIER", "MANAGER", "ADMIN"]} />}>
+                <Route path="/pos" element={<Pos />} />
+                <Route path="/my-sales" element={<Placeholder name="My Sales" />} />
+              </Route>
               <Route path="/sales" element={<Placeholder name="Sales" />} />
-              <Route path="/purchase-orders" element={<PurchaseOrders />} />
-              <Route path="/purchase-orders/new" element={<PurchaseOrderForm />} />
-              <Route path="/purchase-orders/:id" element={<PurchaseOrderDetail />} />
-              <Route path="/purchases" element={<Placeholder name="Purchases" />} />
-              <Route path="/transfers" element={<Transfers />} />
-              <Route path="/transfers/new" element={<TransferForm />} />
-              <Route path="/transfers/:id" element={<TransferDetail />} />
-              <Route path="/reports" element={<Placeholder name="Reports" />} />
-              <Route path="/audit-log" element={<Placeholder name="Audit Log" />} />
-              <Route path="/pos" element={<Pos />} />
-              <Route path="/my-sales" element={<Placeholder name="My Sales" />} />
             </Route>
           </Route>
           <Route path="/" element={<ProtectedRoute />}>

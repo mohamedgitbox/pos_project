@@ -10,7 +10,7 @@ interface Product {
   barcode: string;
   costPrice: string;
   sellingPrice: string;
-  totalStock: number;
+  stock: number;
 }
 
 interface BranchOption {
@@ -62,7 +62,10 @@ export default function Pos() {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/products");
+      if (!branchId) {
+        throw new Error("No branch selected");
+      }
+      const res = await api.get(`/inventory/branch/${branchId}`);
       setProducts(res.data.data);
     } catch (err) {
       setError(errorMessage(err));
@@ -90,7 +93,7 @@ export default function Pos() {
       return;
     }
     void loadProducts();
-  }, [canUsePos]);
+  }, [canUsePos, branchId]);
 
   useEffect(() => {
     if (canUsePos && !user?.branchId) {
@@ -223,13 +226,13 @@ export default function Pos() {
                 key={product._id}
                 type="button"
                 onClick={() => addToCart(product)}
-                disabled={product.totalStock <= 0}
+                disabled={product.stock <= 0}
                 className="rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <div className="text-sm font-semibold text-gray-900">{product.name}</div>
                 <div className="mt-1 text-xs text-gray-500">{product.SKU}</div>
                 <div className="mt-3 text-sm font-bold text-blue-700">{money(product.sellingPrice)}</div>
-                <div className="mt-1 text-xs text-gray-500">Stock: {product.totalStock}</div>
+                <div className="mt-1 text-xs text-gray-500">Stock: {product.stock}</div>
               </button>
             ))}
           </div>

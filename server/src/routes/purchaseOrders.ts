@@ -5,7 +5,7 @@ import Decimal from "decimal.js";
 import { AuditLog, Branch, Inventory, Product, PurchaseItem, PurchaseOrder } from "../models";
 import { authMiddleware } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
-import { incrementStock } from "../services/inventoryService";
+import { incrementStock, calculateWeightedAverageCost } from "../services/inventoryService";
 import { getNextSequence } from "../services/counterService";
 
 const router = Router();
@@ -304,10 +304,7 @@ router.put("/:id/status", requireRole("ADMIN", "MANAGER"), async (req: Request, 
 
           const oldQty = inventory?.quantity ?? 0;
           const oldCost = new Decimal(decimalString(product.costPrice));
-          const denominator = new Decimal(oldQty).plus(agg.qty);
-          const newAvgCost = denominator.isZero()
-            ? agg.cost.div(agg.qty)
-            : oldCost.mul(oldQty).plus(agg.cost).div(denominator);
+          const newAvgCost = calculateWeightedAverageCost(oldQty, oldCost, agg.qty, agg.cost);
 
           await incrementStock(productId, branchObjectId, agg.qty, session);
           await Product.updateOne(

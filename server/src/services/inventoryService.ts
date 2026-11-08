@@ -59,3 +59,19 @@ export async function updateCostPrice(
     costPrice: mongoose.Types.Decimal128.fromString(weightedAvg.toFixed(4)),
   });
 }
+
+export function calculateWeightedAverageCost(
+  oldQty: number,
+  oldCost: Decimal,
+  newQty: number,
+  newCost: Decimal
+): Decimal {
+  const totalQtyDec = new Decimal(oldQty);
+  const qtyDec = new Decimal(newQty);
+
+  if (totalQtyDec.isZero()) {
+    return newCost;
+  }
+
+  return oldCost.mul(totalQtyDec).add(newCost.mul(qtyDec)).div(totalQtyDec.add(qtyDec));
+}

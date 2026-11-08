@@ -431,9 +431,15 @@ Important local URLs:
 
 - Milestone 6 should implement Reports & Dashboard analytics.
 - SSE/change-stream real-time updates are planned but not implemented yet.
-- Reports and dashboard analytics are still mostly placeholder/static.
 - Users and Branches CRUD pages are not fully implemented yet.
 - Audit Log viewer is not implemented yet.
 - Security & Data Integrity Patch has been applied.
+- Batch 2 of fixes has been applied:
+  - POS Stock Display: Now shows branch-specific stock.
+  - Dashboard: Uses real data from `/api/v1/reports/dashboard`.
+  - RBAC on Frontend Routes: Applied role-based access control.
+  - Rate Limiting & Helmet: Added security headers and rate limiting for login.
+  - Audit Middleware: Sanitizes sensitive fields (password, token, secret).
+  - Weighted-Average Cost Calculation: Consolidated into `inventoryService.ts`.
 - Before testing purchases/POS, ensure MongoDB replica set is running and seeded.
 - Newly created products start with branch inventory quantity `0`; use Adjust Stock or receive a PO before selling them.
