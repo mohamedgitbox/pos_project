@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { z, ZodError } from "zod";
 import mongoose from "mongoose";
 import Decimal from "decimal.js";
-import { AuditLog, Branch, Sale, SaleItem } from "../models";
+import { AuditLog, Branch, Sale, SaleItem, Product } from "../models";
 import { authMiddleware } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { decrementStock } from "../services/inventoryService";
@@ -85,17 +85,39 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
 
     const branchObjectId = new mongoose.Types.ObjectId(data.branchId);
     const userObjectId = new mongoose.Types.ObjectId(String(req.user._id));
-    const total = data.items.reduce(
-      (sum, item) => sum.plus(new Decimal(item.price).mul(item.quantity)),
-      new Decimal(0)
-    );
-    const totalAmount = total.toFixed(2);
     let response: CheckoutResponse | undefined;
 
     await session.withTransaction(async () => {
       const invoiceNo = await getNextSequence("invoiceNo", session);
 
+      // Calculate total amount using database prices
+      let calculatedTotal = new Decimal(0);
+      const saleItems = [];
+
       for (const item of data.items) {
+        const product = await Product.findById(item.productId).session(session);
+        if (!product) {
+          throw new Error(`Product ${item.productId} not found`);
+        }
+
+        const itemPrice = new Decimal(product.sellingPrice.toString());
+        const subtotal = itemPrice.mul(item.quantity);
+        calculatedTotal = calculatedTotal.add(subtotal);
+
+        // Validate that the provided price is within 1% of the database price
+        const providedPrice = new Decimal(item.price);
+        const priceDifference = Math.abs(itemPrice.minus(providedPrice).div(itemPrice).toNumber());
+        if (priceDifference > 0.01) {
+          console.warn(`Price mismatch for product ${item.productId}: provided ${item.price}, database ${product.sellingPrice}`);
+        }
+
+        saleItems.push({
+          productId: new mongoose.Types.ObjectId(item.productId),
+          quantity: item.quantity,
+          price: mongoose.Types.Decimal128.fromString(itemPrice.toFixed(2)),
+          subtotal: mongoose.Types.Decimal128.fromString(subtotal.toFixed(2)),
+        });
+
         await decrementStock(
           new mongoose.Types.ObjectId(item.productId),
           branchObjectId,
@@ -108,17 +130,15 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
         invoiceNo,
         branchId: branchObjectId,
         userId: userObjectId,
-        totalAmount: mongoose.Types.Decimal128.fromString(totalAmount),
+        totalAmount: mongoose.Types.Decimal128.fromString(calculatedTotal.toFixed(2)),
         timestamp: new Date(),
       });
       await sale.save({ session });
 
       await SaleItem.insertMany(
-        data.items.map((item) => ({
+        saleItems.map((saleItem) => ({
+          ...saleItem,
           saleId: sale._id as mongoose.Types.ObjectId,
-          productId: new mongoose.Types.ObjectId(item.productId),
-          quantity: item.quantity,
-          price: mongoose.Types.Decimal128.fromString(new Decimal(item.price).toFixed(2)),
         })),
         { session }
       );
@@ -132,7 +152,7 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
         after: {
           invoiceNo,
           branchId: data.branchId,
-          totalAmount,
+          totalAmount: calculatedTotal.toFixed(2),
           itemCount: data.items.length,
         },
         ipAddress: req.ip,
@@ -145,11 +165,13 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
         invoiceNo,
         branchId: data.branchId,
         userId: String(userObjectId),
-        totalAmount,
+        totalAmount: calculatedTotal.toFixed(2),
         timestamp: sale.timestamp.toISOString(),
-        items: data.items.map((item) => ({
-          ...item,
-          subtotal: new Decimal(item.price).mul(item.quantity).toFixed(2),
+        items: saleItems.map((saleItem) => ({
+          productId: String(saleItem.productId),
+          quantity: saleItem.quantity,
+          price: parseFloat(saleItem.price.toString()),
+          subtotal: saleItem.subtotal.toString(),
         })),
       };
     });

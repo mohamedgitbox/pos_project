@@ -434,6 +434,6 @@ Important local URLs:
 - Reports and dashboard analytics are still mostly placeholder/static.
 - Users and Branches CRUD pages are not fully implemented yet.
 - Audit Log viewer is not implemented yet.
-- Some older planning docs mention `argon2` and `shadcn/ui`; current implemented code uses `bcrypt` and plain Tailwind components.
+- Security & Data Integrity Patch has been applied.
 - Before testing purchases/POS, ensure MongoDB replica set is running and seeded.
 - Newly created products start with branch inventory quantity `0`; use Adjust Stock or receive a PO before selling them.
