@@ -29,6 +29,23 @@ interface CheckoutResponse {
   timestamp: string;
 }
 
+interface ReceiptItem {
+  product: { _id: string; name: string; SKU: string; barcode: string } | null;
+  quantity: number;
+  price: string;
+  subtotal: string;
+}
+
+interface ReceiptDetail {
+  _id: string;
+  invoiceNo: string;
+  branch: { _id: string; name: string } | null;
+  user: { _id: string; name: string } | null;
+  totalAmount: string;
+  timestamp: string;
+  items: ReceiptItem[];
+}
+
 function errorMessage(error: unknown): string {
   if (typeof error === "object" && error !== null && "response" in error) {
     const axiosError = error as { response?: { data?: { error?: string } } };
@@ -54,7 +71,7 @@ export default function Pos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [checkingOut, setCheckingOut] = useState(false);
-  const [receipt, setReceipt] = useState<CheckoutResponse | null>(null);
+  const [receipt, setReceipt] = useState<ReceiptDetail | null>(null);
 
   const branchId = user?.branchId ?? selectedBranchId;
 
@@ -160,7 +177,8 @@ export default function Pos() {
         })),
       });
       const data = res.data.data as CheckoutResponse;
-      setReceipt(data);
+      const detail = await api.get(`/sales/${data._id}`);
+      setReceipt(detail.data.data as ReceiptDetail);
       setCart([]);
       toast.success(`Sale ${data.invoiceNo} completed.`);
       await loadProducts();
@@ -296,17 +314,46 @@ export default function Pos() {
         </div>
 
         {receipt && (
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">Receipt</h2>
+          <div id="receipt" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-900">{receipt.branch?.name ?? "Receipt"}</h2>
             <div className="mt-3 space-y-1 text-sm text-gray-700">
               <div>Invoice: {receipt.invoiceNo}</div>
-              <div>Total: {money(receipt.totalAmount)}</div>
+              <div>Cashier: {receipt.user?.name ?? "Unknown"}</div>
               <div className="text-xs text-gray-500">{new Date(receipt.timestamp).toLocaleString()}</div>
             </div>
+            <table className="mt-3 w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
+                  <th className="py-1 pr-2 font-medium">Item</th>
+                  <th className="py-1 pr-2 text-right font-medium">Qty</th>
+                  <th className="py-1 pr-2 text-right font-medium">Price</th>
+                  <th className="py-1 text-right font-medium">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {receipt.items.map((item) => (
+                  <tr key={item.product?._id}>
+                    <td className="py-1 pr-2 text-gray-900">{item.product?.name ?? "Deleted product"}</td>
+                    <td className="py-1 pr-2 text-right text-gray-700">{item.quantity}</td>
+                    <td className="py-1 pr-2 text-right text-gray-700">{money(item.price)}</td>
+                    <td className="py-1 text-right text-gray-900">{money(item.subtotal)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="border-t border-gray-300 text-base font-bold text-gray-900">
+                  <td className="py-2 pr-2">Total</td>
+                  <td />
+                  <td />
+                  <td className="py-2 text-right">{money(receipt.totalAmount)}</td>
+                </tr>
+              </tfoot>
+            </table>
+            <div className="mt-3 text-center text-sm text-gray-500">Thank you for your purchase!</div>
             <button
               type="button"
               onClick={() => window.print()}
-              className="mt-4 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
+              className="print:hidden mt-4 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
             >
               Print Receipt
             </button>
