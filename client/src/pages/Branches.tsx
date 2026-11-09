@@ -158,3 +158,111 @@ export default function Branches() {
             <h2 className="text-xl font-bold mb-4">{editingId ? "Edit Branch" : "Add Branch"}</h2>
             <form onSubmit={submit} className="space-y-4">
               {error && <div className="text-sm text-red-600">{error}</div>}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  name="name"
+                  value={form.name}
+                  onChange={change}
+                  required
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Type</label>
+                <input
+                  name="type"
+                  value={form.type}
+                  onChange={change}
+                  required
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Location</label>
+                <input
+                  name="location"
+                  value={form.location}
+                  onChange={change}
+                  required
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <input
+                  name="phone"
+                  value={form.phone}
+                  onChange={change}
+                  required
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="text-sm text-gray-500">Loading branches...</div>
+      ) : branches.length === 0 ? (
+        <div className="rounded-md bg-gray-50 px-4 py-3 text-sm text-gray-500">No branches found.</div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Name</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Location</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Phone</th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {branches.map((branch) => (
+                <tr key={branch._id}>
+                  <td className="px-4 py-3 text-sm text-gray-900">{branch.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{branch.type}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{branch.location}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{branch.phone}</td>
+                  <td className="px-4 py-3 text-right text-sm">
+                    <button
+                      onClick={() => edit(branch)}
+                      className="mr-2 text-blue-600 hover:text-blue-800"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => remove(branch._id)}
+                      disabled={deletingId === branch._id}
+                      className="text-red-600 hover:text-red-800 disabled:opacity-50"
+                    >
+                      {deletingId === branch._id ? "Deleting..." : "Delete"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
