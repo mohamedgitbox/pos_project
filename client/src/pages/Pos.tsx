@@ -193,22 +193,22 @@ export default function Pos() {
 
   if (!canUsePos) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
+      <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">
         Only ADMIN, MANAGER, or CASHIER can use the POS.
       </div>
     );
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid gap-6 lg:grid-cols-3 fade-up">
       <div className="space-y-4 lg:col-span-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold text-gray-900">POS</h1>
+          <h1 className="text-2xl font-bold text-slate-50 tracking-tight">POS</h1>
           {!user?.branchId && (
             <select
               value={selectedBranchId}
               onChange={(event) => setSelectedBranchId(event.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-well px-3 py-2 text-sm"
             >
               <option value="">Select branch</option>
               {branches.map((branch) => (
@@ -224,17 +224,17 @@ export default function Pos() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search products by name, SKU, or barcode..."
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input-well w-full px-3 py-2 text-sm"
         />
 
-        {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+        {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
 
         {loading ? (
-          <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">
+          <div className="card p-10 text-center text-sm text-slate-400">
             Loading products...
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">
+          <div className="card p-10 text-center text-sm text-slate-400">
             No products found.
           </div>
         ) : (
@@ -245,12 +245,12 @@ export default function Pos() {
                 type="button"
                 onClick={() => addToCart(product)}
                 disabled={product.stock <= 0}
-                className="rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+                className="lift rounded-xl border border-slate-700 bg-slate-800 p-4 text-left shadow-sm transition hover:border-amber-600/50 hover:bg-slate-700/60 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <div className="text-sm font-semibold text-gray-900">{product.name}</div>
-                <div className="mt-1 text-xs text-gray-500">{product.SKU}</div>
-                <div className="mt-3 text-sm font-bold text-blue-700">{money(product.sellingPrice)}</div>
-                <div className="mt-1 text-xs text-gray-500">Stock: {product.stock}</div>
+                <div className="text-sm font-semibold text-slate-100">{product.name}</div>
+                <div className="mt-1 text-xs text-slate-400">{product.SKU}</div>
+                <div className="mt-3 text-sm font-bold text-amber-500">{money(product.sellingPrice)}</div>
+                <div className="mt-1 text-xs text-slate-400">Stock: {product.stock}</div>
               </button>
             ))}
           </div>
@@ -258,28 +258,28 @@ export default function Pos() {
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900">Cart</h2>
+        <div className="card p-4">
+          <h2 className="text-lg font-semibold text-slate-50">Cart</h2>
 
           {cart.length === 0 ? (
-            <div className="py-10 text-center text-sm text-gray-500">Cart is empty.</div>
+            <div className="py-10 text-center text-sm text-slate-400">Cart is empty.</div>
           ) : (
             <div className="mt-4 space-y-3">
               {cart.map((item) => (
-                <div key={item._id} className="border-b border-gray-100 pb-3">
+                <div key={item._id} className="border-b border-slate-700/50 pb-3">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                    <div className="text-sm font-semibold text-gray-900">
+                    <div className="text-sm font-medium text-slate-100">{item.name}</div>
+                    <div className="text-sm font-semibold text-slate-100">
                       {money(Number(item.sellingPrice) * item.quantity)}
                     </div>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <div className="text-xs text-gray-500">{money(item.sellingPrice)} each</div>
+                    <div className="text-xs text-slate-400">{money(item.sellingPrice)} each</div>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                        className="h-7 w-7 rounded border border-gray-300 text-sm hover:bg-gray-50"
+                        className="h-7 w-7 rounded border border-slate-600 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
                       >
                         -
                       </button>
@@ -287,7 +287,7 @@ export default function Pos() {
                       <button
                         type="button"
                         onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        className="h-7 w-7 rounded border border-gray-300 text-sm hover:bg-gray-50"
+                        className="h-7 w-7 rounded border border-slate-600 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
                       >
                         +
                       </button>
@@ -296,7 +296,7 @@ export default function Pos() {
                 </div>
               ))}
 
-              <div className="flex items-center justify-between pt-2 text-base font-bold text-gray-900">
+              <div className="flex items-center justify-between pt-2 text-base font-bold text-slate-50">
                 <span>Total</span>
                 <span>{money(total)}</span>
               </div>
@@ -305,7 +305,7 @@ export default function Pos() {
                 type="button"
                 onClick={() => void checkout()}
                 disabled={checkingOut || cart.length === 0 || !branchId}
-                className="w-full rounded-md bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-500 transition-colors shadow-lg shadow-amber-600/20 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {checkingOut ? "Processing..." : "Checkout"}
               </button>
@@ -314,12 +314,12 @@ export default function Pos() {
         </div>
 
         {receipt && (
-          <div id="receipt" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">{receipt.branch?.name ?? "Receipt"}</h2>
+          <div id="receipt" className="card p-4">
+            <h2 className="text-lg font-semibold text-slate-50">{receipt.branch?.name ?? "Receipt"}</h2>
             <div className="mt-3 space-y-1 text-sm text-gray-700">
               <div>Invoice: {receipt.invoiceNo}</div>
               <div>Cashier: {receipt.user?.name ?? "Unknown"}</div>
-              <div className="text-xs text-gray-500">{new Date(receipt.timestamp).toLocaleString()}</div>
+              <div className="text-xs text-slate-400">{new Date(receipt.timestamp).toLocaleString()}</div>
             </div>
             <table className="mt-3 w-full text-sm">
               <thead>
