@@ -1,7 +1,11 @@
 import { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import toast from "react-hot-toast";
+import { Package } from "lucide-react";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/ui/PageHeader";
+import DataTable from "../components/ui/DataTable";
+import StatusBadge from "../components/ui/StatusBadge";
 
 interface Product {
   _id: string;
@@ -45,6 +49,18 @@ function errorMessage(error: unknown): string {
 function money(value: string): string {
   const parsed = Number(value);
   return Number.isNaN(parsed) ? value : parsed.toFixed(2);
+}
+
+function stockVariant(totalStock: number): "success" | "pending" | "danger" {
+  if (totalStock <= 0) return "danger";
+  if (totalStock < 10) return "pending";
+  return "success";
+}
+
+function stockLabel(totalStock: number): string {
+  if (totalStock <= 0) return "Out of stock";
+  if (totalStock < 10) return "Low stock";
+  return "In stock";
 }
 
 export default function Products() {
@@ -192,23 +208,26 @@ export default function Products() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-        <button
-          type="button"
-          onClick={() => {
-            setOpen(!open);
-            setError("");
-            setSuccess("");
-          }}
-          className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-        >
-          {open ? "Close Form" : "Add Product"}
-        </button>
-      </div>
+      <PageHeader
+        title="Products"
+        subtitle="Manage your product catalog and pricing."
+        actions={
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(!open);
+              setError("");
+              setSuccess("");
+            }}
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+          >
+            {open ? "Close Form" : "Add Product"}
+          </button>
+        }
+      />
 
-      {error && <div className="rounded bg-red-50 p-3 text-sm text-red-700">{error}</div>}
-      {success && <div className="rounded bg-green-50 p-3 text-sm text-green-700">{success}</div>}
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+      {success && <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{success}</div>}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -226,7 +245,7 @@ export default function Products() {
               onChange={change}
               placeholder="Name"
               required
-              className="w-full rounded border border-gray-300 p-2 text-sm"
+              className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
             />
 
             <div className="grid grid-cols-2 gap-3">
@@ -236,7 +255,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="SKU"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
               <input
                 name="barcode"
@@ -244,7 +263,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="Barcode"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
               <input
                 name="costPrice"
@@ -255,7 +274,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="Cost Price"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
               <input
                 name="sellingPrice"
@@ -266,7 +285,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="Selling Price"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
             </div>
 
@@ -274,14 +293,14 @@ export default function Products() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-60"
+                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
               >
                 {saving ? "Saving..." : "Save Product"}
               </button>
@@ -311,7 +330,7 @@ export default function Products() {
                 value={adjustBranchId}
                 onChange={(event) => setAdjustBranchId(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               >
                 <option value="">Select branch</option>
                 {branches.map((branch) => (
@@ -331,7 +350,7 @@ export default function Products() {
                 value={adjustQuantity}
                 onChange={(event) => setAdjustQuantity(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
             </div>
 
@@ -339,14 +358,14 @@ export default function Products() {
               <button
                 type="button"
                 onClick={closeAdjust}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={adjustSaving}
-                className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-60"
+                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
               >
                 {adjustSaving ? "Saving..." : "Save"}
               </button>
@@ -355,59 +374,50 @@ export default function Products() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        {loading ? (
-          <div className="p-10 text-center text-sm text-gray-500">Loading products...</div>
-        ) : products.length === 0 ? (
-          <div className="p-10 text-center text-sm text-gray-500">No products found.</div>
-        ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">SKU</th>
-                <th className="px-4 py-3">Cost Price</th>
-                <th className="px-4 py-3">Selling Price</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {products.map((product) => (
-                <tr key={product._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                    <div className="text-xs text-gray-500">Stock: {product.totalStock}</div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    <div>{product.SKU}</div>
-                    <div className="text-xs text-gray-500">{product.barcode}</div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{money(product.costPrice)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{money(product.sellingPrice)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      <button
-                        type="button"
-                        onClick={() => openAdjust(product)}
-                        className="text-sm font-medium text-blue-600 hover:underline"
-                      >
-                        Adjust Stock
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void remove(product._id)}
-                        className="text-sm font-medium text-red-600 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      <DataTable
+        headers={["Product", "SKU / Barcode", "Cost Price", "Selling Price", "Stock", "Actions"]}
+        loading={loading}
+        isEmpty={products.length === 0}
+        emptyIcon={Package}
+        emptyTitle="No products found"
+        emptyMessage="Add your first product to start tracking inventory."
+      >
+        {products.map((product) => (
+          <tr key={product._id}>
+            <td className="font-medium text-slate-900">{product.name}</td>
+            <td>
+              <div className="text-slate-900">{product.SKU}</div>
+              <div className="text-xs text-slate-400">{product.barcode}</div>
+            </td>
+            <td className="text-slate-700">{money(product.costPrice)}</td>
+            <td className="text-slate-700">{money(product.sellingPrice)}</td>
+            <td>
+              <div className="flex items-center gap-2">
+                <StatusBadge variant={stockVariant(product.totalStock)}>{stockLabel(product.totalStock)}</StatusBadge>
+                <span className="text-xs text-slate-400">{product.totalStock} units</span>
+              </div>
+            </td>
+            <td className="text-right">
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => openAdjust(product)}
+                  className="text-sm font-medium text-blue-600 hover:underline"
+                >
+                  Adjust Stock
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void remove(product._id)}
+                  className="text-sm font-medium text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </DataTable>
     </div>
   );
 }
