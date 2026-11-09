@@ -13,6 +13,7 @@ import Transfers from "./pages/Transfers";
 import TransferForm from "./pages/TransferForm";
 import TransferDetail from "./pages/TransferDetail";
 import Sales from "./pages/Sales";
+import MySales from "./pages/MySales";
 import { Toaster } from "react-hot-toast";
 
 function Placeholder({ name }: { name: string }) {
@@ -48,7 +49,7 @@ export default function App() {
               </Route>
               <Route element={<ProtectedRoute requiredRoles={["CASHIER", "MANAGER", "ADMIN"]} />}>
                 <Route path="/pos" element={<Pos />} />
-                <Route path="/my-sales" element={<Placeholder name="My Sales" />} />
+                <Route path="/my-sales" element={<MySales />} />
               </Route>
             </Route>
           </Route>
