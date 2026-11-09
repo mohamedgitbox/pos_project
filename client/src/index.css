@@ -43,7 +43,8 @@
 
   /* Shimmer skeleton row */
   .skeleton-row {
-    @apply bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 bg-[length:200%_100%] animate-shimmer;
+    @apply bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 bg-[length:200%_100%];
+    animation: shimmer 2s infinite linear;
   }
 
   /* Primary button */
