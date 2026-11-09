@@ -80,22 +80,22 @@ export default function Inventory() {
   }, [load]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-up">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
-        <p className="text-sm text-gray-500">Stock levels across branches (items under {LOW_STOCK_THRESHOLD} units are highlighted).</p>
+        <h1 className="text-2xl font-bold text-slate-50 tracking-tight">Inventory</h1>
+        <p className="text-sm text-slate-400">Stock levels across branches (items under {LOW_STOCK_THRESHOLD} units are highlighted).</p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="card p-4 flex flex-wrap items-end gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500">Branch</label>
+          <label className="label block">Branch</label>
           <select
             value={branchId}
             onChange={(e) => {
               setBranchId(e.target.value);
               setPage(1);
             }}
-            className="mt-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            className="input-well mt-1 px-3 py-2 text-sm"
           >
             <option value="">All branches</option>
             {branches.map((branch) => (
@@ -107,34 +107,34 @@ export default function Inventory() {
         </div>
       </div>
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
 
       {loading ? (
-        <div className="text-sm text-gray-500">Loading inventory...</div>
+        <div className="text-sm text-slate-400">Loading inventory...</div>
       ) : rows.length === 0 ? (
-        <div className="rounded-md bg-gray-50 px-4 py-3 text-sm text-gray-500">No inventory records found.</div>
+        <div className="card px-4 py-3 text-sm text-slate-400">No inventory records found.</div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto card">
+          <table className="min-w-full divide-y divide-slate-700/50">
+            <thead className="bg-slate-800/50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Product</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">SKU</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Cost</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Price</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Quantity</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Product</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">SKU</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Branch</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Cost</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Price</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Quantity</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
               {rows.map((row) => (
-                <tr key={row._id}>
-                  <td className="px-4 py-3 text-sm text-gray-900">{row.product?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{row.product?.SKU ?? "-"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{row.branch?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">${money(row.product?.costPrice ?? "0")}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">${money(row.product?.sellingPrice ?? "0")}</td>
-                  <td className={`px-4 py-3 text-sm font-medium ${row.quantity < LOW_STOCK_THRESHOLD ? "text-red-600" : "text-gray-900"}`}>
+                <tr key={row._id} className="group hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
+                  <td className="px-4 py-3 text-sm font-medium text-slate-100">{row.product?.name ?? "Unknown"}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{row.product?.SKU ?? "-"}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{row.branch?.name ?? "Unknown"}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">${money(row.product?.costPrice ?? "0")}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">${money(row.product?.sellingPrice ?? "0")}</td>
+                  <td className={`px-4 py-3 text-sm font-semibold ${row.quantity < LOW_STOCK_THRESHOLD ? "text-red-400 bg-red-500/10" : "text-emerald-400"}`}>
                     {row.quantity}
                   </td>
                 </tr>
@@ -145,7 +145,7 @@ export default function Inventory() {
       )}
 
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-slate-400">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total} total)
           </span>
@@ -153,14 +153,14 @@ export default function Inventory() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={pagination.page <= 1}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-50"
             >
               Previous
             </button>
             <button
               onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
               disabled={pagination.page >= pagination.pages}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-50"
             >
               Next
             </button>
