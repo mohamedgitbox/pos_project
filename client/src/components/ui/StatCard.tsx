@@ -1,12 +1,13 @@
 import { LucideIcon } from "lucide-react";
 
-interface StatCardProps {
+export interface StatCardProps {
   label: string;
   value: string | number;
   icon: LucideIcon;
   trend?: string;
   trendUp?: boolean;
   color?: string;
+  delay?: string;
 }
 
 const colorStyles: Record<string, { bg: string; text: string }> = {
@@ -30,10 +31,14 @@ export function StatCard({
   trend,
   trendUp,
   color = "default",
+  delay,
 }: StatCardProps) {
   const style = colorStyles[color] || colorStyles.default;
   return (
-    <div className="card lift fade-up delay-100">
+    <div
+      className="card lift fade-up"
+      style={{ animationDelay: delay }}
+    >
       <div className="flex items-center justify-between mb-4">
         <span className="label">{label}</span>
         <div className={`flex items-center justify-center w-10 h-10 rounded-full ${style.bg}`}>

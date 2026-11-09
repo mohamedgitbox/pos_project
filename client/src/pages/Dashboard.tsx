@@ -89,7 +89,7 @@ export default function Dashboard() {
               value={typeof kpi.value === "number" ? kpi.value : money(kpi.value)}
               icon={Icon}
               color={kpi.color}
-              style={{ animationDelay: `${idx * 100}ms` }}
+              delay={`${idx * 100}ms`}
             />
           );
         })}
