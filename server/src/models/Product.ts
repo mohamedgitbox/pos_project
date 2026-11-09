@@ -26,6 +26,11 @@ const productSchema = new Schema<IProduct>(
       required: true,
       index: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
     costPrice: {
       type: Schema.Types.Decimal128,
       required: true,
@@ -35,7 +40,7 @@ const productSchema = new Schema<IProduct>(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 productSchema.index({ name: "text" });

@@ -15,40 +15,53 @@ router.get("/branch/:branchId", async (req: Request, res: Response) => {
 
     // Validate branchId
     if (!mongoose.Types.ObjectId.isValid(branchId)) {
-      return res.status(400).json({ success: false, error: "Invalid branch ID" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid branch ID" });
     }
 
     const branchObjectId = new mongoose.Types.ObjectId(branchId);
 
     // Check branch scoping for non-ADMIN users
     if (req.user?.role !== "ADMIN") {
-      const userBranchId = req.user?.branchId ? String(req.user.branchId) : null;
+      const userBranchId = req.user?.branchId
+        ? String(req.user.branchId)
+        : null;
       if (userBranchId && String(branchObjectId) !== userBranchId) {
-        return res.status(403).json({ success: false, error: "You can only view inventory for your assigned branch" });
+        return res
+          .status(403)
+          .json({
+            success: false,
+            error: "You can only view inventory for your assigned branch",
+          });
       }
     }
 
     // Fetch inventory for the branch and populate product details
     const inventory = await Inventory.aggregate([
       { $match: { branchId: branchObjectId } },
-      { $lookup: {
-        from: "products",
-        localField: "productId",
-        foreignField: "_id",
-        as: "product",
-      }},
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
       { $unwind: "$product" },
-      { $match: { "product.isDeleted": false } },
-      { $project: {
-        _id: 0,
-        productId: { $toString: "$product._id" },
-        name: "$product.name",
-        SKU: "$product.SKU",
-        barcode: "$product.barcode",
-        costPrice: { $toString: "$product.costPrice" },
-        sellingPrice: { $toString: "$product.sellingPrice" },
-        stock: "$quantity",
-      }},
+      { $match: { "product.isDeleted": { $ne: true } } },
+      {
+        $project: {
+          _id: 0,
+          productId: { $toString: "$product._id" },
+          name: "$product.name",
+          SKU: "$product.SKU",
+          barcode: "$product.barcode",
+          costPrice: { $toString: "$product.costPrice" },
+          sellingPrice: { $toString: "$product.sellingPrice" },
+          stock: "$quantity",
+        },
+      },
     ]);
 
     // Format the response
@@ -66,119 +79,152 @@ router.get("/branch/:branchId", async (req: Request, res: Response) => {
     return res.json({ success: true, data: productsWithStock });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, error: "Failed to fetch branch inventory" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch branch inventory" });
   }
 });
 
 // Get inventory overview across all branches (ADMIN/MANAGER)
-router.get("/", requireRole("ADMIN", "MANAGER"), async (req: Request, res: Response) => {
-  try {
-    const { page = 1, limit = 20, branchId, lowStock } = req.query;
-    const pageNum = Number(page);
-    const limitNum = Number(limit);
+router.get(
+  "/",
+  requireRole("ADMIN", "MANAGER"),
+  async (req: Request, res: Response) => {
+    try {
+      const { page = 1, limit = 20, branchId, lowStock } = req.query;
+      const pageNum = Number(page);
+      const limitNum = Number(limit);
 
-    const filter: Record<string, unknown> = {};
+      const filter: Record<string, unknown> = {};
 
-    if (branchId) {
-      if (!mongoose.Types.ObjectId.isValid(String(branchId))) {
-        return res.status(400).json({ success: false, error: "Invalid branch ID" });
+      if (branchId) {
+        if (!mongoose.Types.ObjectId.isValid(String(branchId))) {
+          return res
+            .status(400)
+            .json({ success: false, error: "Invalid branch ID" });
+        }
+        filter.branchId = new mongoose.Types.ObjectId(String(branchId));
       }
-      filter.branchId = new mongoose.Types.ObjectId(String(branchId));
-    }
 
-    if (lowStock === "true") {
-      filter.quantity = { $lt: 5 };
-    }
-
-    if (req.user?.role !== "ADMIN") {
-      const userBranchId = req.user?.branchId ? String(req.user.branchId) : null;
-      if (userBranchId) {
-        filter.branchId = new mongoose.Types.ObjectId(userBranchId);
+      if (lowStock === "true") {
+        filter.quantity = { $lt: 5 };
       }
-    }
 
-    const [inventory, total] = await Promise.all([
-      Inventory.find(filter)
-        .populate("branchId", "name")
-        .populate("productId", "name SKU barcode costPrice sellingPrice")
-        .sort({ quantity: 1, createdAt: -1 })
-        .skip((pageNum - 1) * limitNum)
-        .limit(limitNum)
-        .lean(),
-      Inventory.countDocuments(filter),
-    ]);
+      if (req.user?.role !== "ADMIN") {
+        const userBranchId = req.user?.branchId
+          ? String(req.user.branchId)
+          : null;
+        if (userBranchId) {
+          filter.branchId = new mongoose.Types.ObjectId(userBranchId);
+        }
+      }
 
-    interface PopulatedInventory {
-      _id: unknown;
-      productId: { _id: unknown; name: string; SKU: string; barcode: string; costPrice: { toString(): string }; sellingPrice: { toString(): string } };
-      branchId: { _id: unknown; name: string };
-      quantity: number;
-      minLevel: number;
-    }
+      const [inventory, total] = await Promise.all([
+        Inventory.find(filter)
+          .populate("branchId", "name")
+          .populate("productId", "name SKU barcode costPrice sellingPrice")
+          .sort({ quantity: 1, createdAt: -1 })
+          .skip((pageNum - 1) * limitNum)
+          .limit(limitNum)
+          .lean(),
+        Inventory.countDocuments(filter),
+      ]);
 
-    const formattedInventory = inventory.map((item) => {
-      const populatedItem = item as unknown as PopulatedInventory;
-      return {
-        _id: String(populatedItem._id),
-        product: {
-          _id: String(populatedItem.productId._id),
-          name: populatedItem.productId.name,
-          SKU: populatedItem.productId.SKU,
-          barcode: populatedItem.productId.barcode,
-          costPrice: populatedItem.productId.costPrice.toString(),
-          sellingPrice: populatedItem.productId.sellingPrice.toString(),
+      interface PopulatedInventory {
+        _id: unknown;
+        productId: {
+          _id: unknown;
+          name: string;
+          SKU: string;
+          barcode: string;
+          costPrice: { toString(): string };
+          sellingPrice: { toString(): string };
+        };
+        branchId: { _id: unknown; name: string };
+        quantity: number;
+        minLevel: number;
+      }
+
+      const formattedInventory = inventory.map((item) => {
+        const populatedItem = item as unknown as PopulatedInventory;
+        return {
+          _id: String(populatedItem._id),
+          product: {
+            _id: String(populatedItem.productId._id),
+            name: populatedItem.productId.name,
+            SKU: populatedItem.productId.SKU,
+            barcode: populatedItem.productId.barcode,
+            costPrice: populatedItem.productId.costPrice.toString(),
+            sellingPrice: populatedItem.productId.sellingPrice.toString(),
+          },
+          branch: {
+            _id: String(populatedItem.branchId._id),
+            name: populatedItem.branchId.name,
+          },
+          quantity: populatedItem.quantity,
+          minLevel: populatedItem.minLevel,
+        };
+      });
+
+      return res.json({
+        success: true,
+        data: formattedInventory,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          pages: Math.ceil(total / limitNum),
         },
-        branch: { _id: String(populatedItem.branchId._id), name: populatedItem.branchId.name },
-        quantity: populatedItem.quantity,
-        minLevel: populatedItem.minLevel,
-      };
-    });
-
-    return res.json({
-      success: true,
-      data: formattedInventory,
-      pagination: {
-        page: pageNum,
-        limit: limitNum,
-        total,
-        pages: Math.ceil(total / limitNum),
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, error: "Failed to fetch inventory" });
-  }
-});
+      });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ success: false, error: "Failed to fetch inventory" });
+    }
+  },
+);
 
 // Get inventory summary by branch
-router.get("/summary", requireRole("ADMIN", "MANAGER"), async (_req: Request, res: Response) => {
-  try {
-    const branches = await Branch.find().select("_id name").lean();
+router.get(
+  "/summary",
+  requireRole("ADMIN", "MANAGER"),
+  async (_req: Request, res: Response) => {
+    try {
+      const branches = await Branch.find().select("_id name").lean();
 
-    const summary = await Promise.all(
-      branches.map(async (branch) => {
-        const inventory = await Inventory.find({ branchId: branch._id })
-          .populate("productId", "name")
-          .lean();
+      const summary = await Promise.all(
+        branches.map(async (branch) => {
+          const inventory = await Inventory.find({ branchId: branch._id })
+            .populate("productId", "name")
+            .lean();
 
-        const totalProducts = inventory.length;
-        const totalQuantity = inventory.reduce((sum, item) => sum + item.quantity, 0);
-        const lowStock = inventory.filter((item) => item.quantity < item.minLevel).length;
+          const totalProducts = inventory.length;
+          const totalQuantity = inventory.reduce(
+            (sum, item) => sum + item.quantity,
+            0,
+          );
+          const lowStock = inventory.filter(
+            (item) => item.quantity < item.minLevel,
+          ).length;
 
-        return {
-          branch: { _id: String(branch._id), name: branch.name },
-          totalProducts,
-          totalQuantity,
-          lowStock,
-        };
-      })
-    );
+          return {
+            branch: { _id: String(branch._id), name: branch.name },
+            totalProducts,
+            totalQuantity,
+            lowStock,
+          };
+        }),
+      );
 
-    return res.json({ success: true, data: summary });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, error: "Failed to fetch inventory summary" });
-  }
-});
+      return res.json({ success: true, data: summary });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ success: false, error: "Failed to fetch inventory summary" });
+    }
+  },
+);
 
 export default router;
