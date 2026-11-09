@@ -35,6 +35,9 @@ coverage/
 # TypeScript
 *.tsbuildinfo
 
+# Session artifacts (never commit)
+*cookies*.txt
+
 # Misc
 .cache/
 .temp/
