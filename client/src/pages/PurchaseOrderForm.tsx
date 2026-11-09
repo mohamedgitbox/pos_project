@@ -147,44 +147,44 @@ export default function PurchaseOrderForm() {
   };
 
   if (!canManage) {
-    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can create purchase orders.</div>;
+    return <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">Only ADMIN or MANAGER can create purchase orders.</div>;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-up">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">New Purchase Order</h1>
-          <p className="text-sm text-gray-500">Add supplier, branch, and ordered items.</p>
+          <h1 className="text-2xl font-bold text-slate-50 tracking-tight">New Purchase Order</h1>
+          <p className="text-sm text-slate-400">Add supplier, branch, and ordered items.</p>
         </div>
-        <Link to="/purchase-orders" className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
+        <Link to="/purchase-orders" className="btn-secondary px-3 py-1.5 text-sm">
           Back
         </Link>
       </div>
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
 
       {loading ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">Loading form data...</div>
+        <div className="card p-10 text-center text-sm text-slate-400">Loading form data...</div>
       ) : (
-        <form onSubmit={submit} className="space-y-6">
-          <div className="grid gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:grid-cols-2">
+        <form onSubmit={submit} className="space-y-6 fade-up">
+          <div className="card grid gap-4 p-5 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Supplier Name</label>
+              <label className="mb-1 block text-sm font-medium text-slate-300">Supplier Name</label>
               <input
                 value={supplierName}
                 onChange={(event) => setSupplierName(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="input-well w-full p-2 text-sm"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Branch</label>
+              <label className="mb-1 block text-sm font-medium text-slate-300">Branch</label>
               <select
                 value={branchId}
                 onChange={(event) => setBranchId(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="input-well w-full p-2 text-sm"
               >
                 <option value="">Select branch</option>
                 {branches.map((branch) => (
@@ -196,22 +196,22 @@ export default function PurchaseOrderForm() {
             </div>
           </div>
 
-          <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="card space-y-4 p-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Items</h2>
-              <button type="button" onClick={addItem} className="rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50">
+              <h2 className="text-lg font-semibold text-slate-50">Items</h2>
+              <button type="button" onClick={addItem} className="btn-secondary px-3 py-1.5 text-sm">
                 Add Item
               </button>
             </div>
 
             <div className="space-y-4">
               {items.map((item, index) => (
-                <div key={index} className="grid gap-3 rounded-lg border border-gray-200 p-4 md:grid-cols-12">
+                <div key={index} className="grid gap-3 rounded-lg border border-slate-700 bg-slate-900/40 p-4 md:grid-cols-12">
                   <select
                     value={item.productId}
                     onChange={(event) => updateItem(index, "productId", event.target.value)}
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-5"
+                    className="input-well p-2 text-sm md:col-span-5"
                   >
                     <option value="">Select product</option>
                     {products.map((product) => (
@@ -228,7 +228,7 @@ export default function PurchaseOrderForm() {
                     onChange={(event) => updateItem(index, "orderedQty", event.target.value)}
                     placeholder="Qty"
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-2"
+                    className="input-well p-2 text-sm md:col-span-2"
                   />
                   <input
                     type="number"
@@ -238,16 +238,16 @@ export default function PurchaseOrderForm() {
                     onChange={(event) => updateItem(index, "unitCost", event.target.value)}
                     placeholder="Unit cost"
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-2"
+                    className="input-well p-2 text-sm md:col-span-2"
                   />
-                  <div className="flex items-center text-sm text-gray-600 md:col-span-2">
+                  <div className="flex items-center text-sm text-slate-400 md:col-span-2">
                     Subtotal: {money(Number(item.orderedQty || 0) * Number(item.unitCost || 0))}
                   </div>
                   <button
                     type="button"
                     onClick={() => removeItem(index)}
                     disabled={items.length === 1}
-                    className="text-sm font-medium text-red-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50 md:col-span-1"
+                    className="text-sm font-medium text-red-500 hover:text-red-400 hover:underline disabled:cursor-not-allowed disabled:opacity-50 md:col-span-1"
                   >
                     Remove
                   </button>
@@ -255,17 +255,17 @@ export default function PurchaseOrderForm() {
               ))}
             </div>
 
-            <div className="flex items-center justify-between border-t border-gray-200 pt-4 text-base font-bold text-gray-900">
+            <div className="flex items-center justify-between border-t border-slate-700 pt-4 text-base font-bold text-slate-50">
               <span>Total Cost</span>
               <span>{money(totalCost)}</span>
             </div>
           </div>
 
           <div className="flex justify-end gap-3">
-            <Link to="/purchase-orders" className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50">
+            <Link to="/purchase-orders" className="btn-secondary px-4 py-2 text-sm">
               Cancel
             </Link>
-            <button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
+            <button type="submit" disabled={saving} className="btn-primary px-4 py-2 text-sm">
               {saving ? "Saving..." : "Create PO"}
             </button>
           </div>
