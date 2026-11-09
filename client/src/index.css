@@ -2,13 +2,133 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-gray-50 text-slate-900;
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-slate-900 text-slate-50 font-sans;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  /* Surface card (neumorphic + glass) */
+  .card {
+    @apply bg-slate-800 rounded-2xl shadow-neumorphic;
+  }
+  .card-glass {
+    @apply bg-slate-800/60 rounded-2xl shadow-neumorphic border border-white/5;
+  }
+
+  /* Digital frame for large preview surfaces (charts, big tables) */
+  .digital-frame {
+    @apply bg-slate-900 rounded-2xl border border-white/5 p-1.5;
+  }
+
+  /* Glassmorphic overlay (modals, top nav) */
+  .glass {
+    @apply backdrop-blur-xl bg-slate-900/70 border border-white/5;
+  }
+
+  /* Inset input / search well */
+  .input-well {
+    @apply bg-slate-900/60 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50 transition-colors;
+  }
+
+  /* Uppercase micro-label */
+  .label {
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
+  }
+
+  /* Shimmer skeleton row */
+  .skeleton-row {
+    @apply bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 bg-[length:200%_100%] animate-shimmer;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-amber-600 hover:bg-amber-500 text-white font-medium rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary / outline button */
+  .btn-secondary {
+    @apply border border-slate-600 hover:bg-slate-700 text-slate-200 font-medium rounded-lg transition-colors;
+  }
+
+  /* Danger button */
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+}
+
+@layer utilities {
+  /* Staggered entrance delay helpers */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+
+  /* Card/row lift on hover */
+  .lift {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg;
+  }
+
+  /* Fade-up wrapper */
+  .fade-up {
+    @apply animate-fadeUp;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulseSoft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media print {
-  body * { visibility: hidden; }
-  #receipt, #receipt * { visibility: visible; }
+  body * {
+    visibility: hidden;
+  }
+  #receipt,
+  #receipt * {
+    visibility: visible;
+  }
   #receipt {
     position: absolute;
     left: 0;
@@ -17,5 +137,7 @@ body {
     border: none;
     box-shadow: none;
   }
-  @page { margin: 10mm; }
+  @page {
+    margin: 10mm;
+  }
 }
