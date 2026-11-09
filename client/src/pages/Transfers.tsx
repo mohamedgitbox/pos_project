@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import { StatusBadge } from "../components/ui/StatusBadge";
 
 interface BranchRef {
   id: string;
@@ -24,13 +25,6 @@ function errorMessage(error: unknown): string {
     if (axiosError.response?.data?.error) return axiosError.response.data.error;
   }
   return error instanceof Error ? error.message : "Something went wrong";
-}
-
-function statusClass(status: string): string {
-  if (status === "RECEIVED") return "bg-green-100 text-green-800";
-  if (status === "IN_TRANSIT") return "bg-blue-100 text-blue-800";
-  if (status === "CANCELLED") return "bg-red-100 text-red-800";
-  return "bg-gray-100 text-gray-800";
 }
 
 export default function Transfers() {
@@ -65,32 +59,32 @@ export default function Transfers() {
   }, [canManage, statusFilter]);
 
   if (!canManage) {
-    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can manage transfers.</div>;
+    return <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">Only ADMIN or MANAGER can manage transfers.</div>;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-up">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Stock Transfers</h1>
-          <p className="text-sm text-gray-500">Move inventory between branches and track transfer status.</p>
+          <h1 className="text-2xl font-bold text-slate-50 tracking-tight">Stock Transfers</h1>
+          <p className="text-sm text-slate-400">Move inventory between branches and track transfer status.</p>
         </div>
-        <Link to="/transfers/new" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+        <Link to="/transfers/new" className="btn-primary px-4 py-2 text-sm">
           Create Transfer
         </Link>
       </div>
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
 
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-gray-700" htmlFor="status-filter">
+        <label className="text-sm font-medium text-slate-300" htmlFor="status-filter">
           Status
         </label>
         <select
           id="status-filter"
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value)}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="input-well px-3 py-2 text-sm"
         >
           <option value="">All statuses</option>
           <option value="PENDING">Pending</option>
@@ -100,14 +94,14 @@ export default function Transfers() {
         </select>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-hidden card">
         {loading ? (
-          <div className="p-10 text-center text-sm text-gray-500">Loading transfers...</div>
+          <div className="p-10 text-center text-sm text-slate-400">Loading transfers...</div>
         ) : transfers.length === 0 ? (
-          <div className="p-10 text-center text-sm text-gray-500">No transfers found.</div>
+          <div className="p-10 text-center text-sm text-slate-400">No transfers found.</div>
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+          <table className="min-w-full divide-y divide-slate-700/50">
+            <thead className="bg-slate-800/50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-4 py-3">Transfer No</th>
                 <th className="px-4 py-3">From</th>
@@ -118,21 +112,21 @@ export default function Transfers() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
               {transfers.map((transfer) => (
-                <tr key={transfer._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{transfer.transferNo}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{transfer.fromBranch.name || "-"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{transfer.toBranch.name || "-"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{transfer.totalQuantity}</td>
+                <tr key={transfer._id} className="hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
+                  <td className="px-4 py-3 text-sm font-medium text-slate-100">{transfer.transferNo}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{transfer.fromBranch.name || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{transfer.toBranch.name || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{transfer.totalQuantity}</td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-1 text-xs font-semibold ${statusClass(transfer.status)}`}>{transfer.status}</span>
+                    <StatusBadge status={transfer.status} />
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
+                  <td className="px-4 py-3 text-sm text-slate-400">
                     {transfer.createdAt ? new Date(transfer.createdAt).toLocaleDateString() : "-"}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link to={`/transfers/${transfer._id}`} className="text-sm font-medium text-blue-600 hover:underline">
+                    <Link to={`/transfers/${transfer._id}`} className="text-sm font-medium text-amber-600 hover:text-amber-500 hover:underline">
                       View
                     </Link>
                   </td>

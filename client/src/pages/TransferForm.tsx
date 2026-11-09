@@ -101,33 +101,33 @@ export default function TransferForm() {
   };
 
   if (!canManage) {
-    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can create transfers.</div>;
+    return <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">Only ADMIN or MANAGER can create transfers.</div>;
   }
 
   if (loading) {
-    return <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">Loading transfer form...</div>;
+    return <div className="card p-10 text-center text-sm text-slate-400">Loading transfer form...</div>;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-up">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Create Stock Transfer</h1>
-        <p className="text-sm text-gray-500">Select source branch, destination branch, and items to transfer.</p>
+        <h1 className="text-2xl font-bold text-slate-50 tracking-tight">Create Stock Transfer</h1>
+        <p className="text-sm text-slate-400">Select source branch, destination branch, and items to transfer.</p>
       </div>
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
 
-      <form onSubmit={submit} className="space-y-6">
-        <div className="grid gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:grid-cols-2">
+      <form onSubmit={submit} className="space-y-6 fade-up">
+        <div className="card grid gap-4 p-5 md:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="fromBranchId">From Branch</label>
+            <label className="mb-1 block text-sm font-medium text-slate-300" htmlFor="fromBranchId">From Branch</label>
             <select
               id="fromBranchId"
               value={fromBranchId}
               onChange={(event) => setFromBranchId(event.target.value)}
               disabled={!!user?.branchId}
               required
-              className="w-full rounded-md border border-gray-300 p-2 text-sm disabled:bg-gray-100"
+              className="input-well w-full p-2 text-sm disabled:bg-slate-900/80 disabled:text-slate-500"
             >
               <option value="">Select source branch</option>
               {branches.map((branch) => (
@@ -137,13 +137,13 @@ export default function TransferForm() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="toBranchId">To Branch</label>
+            <label className="mb-1 block text-sm font-medium text-slate-300" htmlFor="toBranchId">To Branch</label>
             <select
               id="toBranchId"
               value={toBranchId}
               onChange={(event) => setToBranchId(event.target.value)}
               required
-              className="w-full rounded-md border border-gray-300 p-2 text-sm"
+              className="input-well w-full p-2 text-sm"
             >
               <option value="">Select destination branch</option>
               {branches
@@ -155,30 +155,30 @@ export default function TransferForm() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="card p-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Items</h2>
+            <h2 className="text-lg font-semibold text-slate-50">Items</h2>
             <button
               type="button"
               onClick={() => setItems((prev) => [...prev, emptyItem()])}
-              className="rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50"
+              className="btn-secondary px-3 py-1.5 text-sm"
             >
               Add Item
             </button>
           </div>
 
-          {stockLoading && <div className="mt-4 text-sm text-gray-500">Loading source branch stock...</div>}
+          {stockLoading && <div className="mt-4 text-sm text-slate-400">Loading source branch stock...</div>}
 
           <div className="mt-4 space-y-4">
             {items.map((item, index) => {
               const avail = available[item.productId] ?? 0;
               return (
-                <div key={index} className="grid gap-3 rounded-lg border border-gray-200 p-4 md:grid-cols-12">
+                <div key={index} className="grid gap-3 rounded-lg border border-slate-700 bg-slate-900/40 p-4 md:grid-cols-12">
                   <select
                     value={item.productId}
                     onChange={(event) => updateItem(index, "productId", event.target.value)}
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-7"
+                    className="input-well p-2 text-sm md:col-span-7"
                   >
                     <option value="">Select product</option>
                     {stock
@@ -203,14 +203,14 @@ export default function TransferForm() {
                     onChange={(event) => updateItem(index, "quantity", event.target.value)}
                     placeholder="Qty"
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-3"
+                    className="input-well p-2 text-sm md:col-span-3"
                   />
 
                   <button
                     type="button"
                     onClick={() => setItems((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev))}
                     disabled={items.length === 1}
-                    className="text-sm font-medium text-red-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50 md:col-span-2"
+                    className="text-sm font-medium text-red-500 hover:text-red-400 hover:underline disabled:cursor-not-allowed disabled:opacity-50 md:col-span-2"
                   >
                     Remove
                   </button>
@@ -219,20 +219,20 @@ export default function TransferForm() {
             })}
           </div>
 
-          <div className="flex items-center justify-between border-t border-gray-200 pt-4 text-base font-bold text-gray-900">
+          <div className="flex items-center justify-between border-t border-slate-700 pt-4 text-base font-bold text-slate-50">
             <span>Total Units</span>
             <span>{totalUnits}</span>
           </div>
         </div>
 
         <div className="flex justify-end gap-3">
-          <Link to="/transfers" className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50">
+          <Link to="/transfers" className="btn-secondary px-4 py-2 text-sm">
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving || stockLoading}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+            className="btn-primary px-4 py-2 text-sm"
           >
             {saving ? "Creating..." : "Create Transfer"}
           </button>
