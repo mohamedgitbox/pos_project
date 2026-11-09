@@ -2,6 +2,7 @@ import { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import toast from "react-hot-toast";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import { PageHeader } from "../components/ui/PageHeader";
 
 interface Product {
   _id: string;
@@ -187,35 +188,38 @@ export default function Products() {
   };
 
   if (!canManage) {
-    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can manage products.</div>;
+    return <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">Only ADMIN or MANAGER can manage products.</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-        <button
-          type="button"
-          onClick={() => {
-            setOpen(!open);
-            setError("");
-            setSuccess("");
-          }}
-          className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-        >
-          {open ? "Close Form" : "Add Product"}
-        </button>
-      </div>
+    <div className="space-y-6 fade-up">
+      <PageHeader
+        title="Products"
+        subtitle="Manage your product catalog, prices, and stock."
+        action={
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(!open);
+              setError("");
+              setSuccess("");
+            }}
+            className="btn-primary"
+          >
+            {open ? "Close Form" : "Add Product"}
+          </button>
+        }
+      />
 
-      {error && <div className="rounded bg-red-50 p-3 text-sm text-red-700">{error}</div>}
-      {success && <div className="rounded bg-green-50 p-3 text-sm text-green-700">{success}</div>}
+      {error && <div className="rounded bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">{error}</div>}
+      {success && <div className="rounded bg-emerald-500/10 border border-emerald-500/20 p-3 text-sm text-emerald-400">{success}</div>}
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <form onSubmit={submit} className="w-full max-w-md space-y-3 rounded-xl bg-white p-5 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+          <form onSubmit={submit} className="w-full max-w-md space-y-3 rounded-xl bg-slate-800 border border-white/5 p-5 shadow-2xl fade-up">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Add Product</h2>
-              <button type="button" onClick={() => setOpen(false)} className="text-gray-500 hover:text-gray-700">
+              <h2 className="text-lg font-semibold text-slate-100">Add Product</h2>
+              <button type="button" onClick={() => setOpen(false)} className="text-slate-400 hover:text-slate-100 transition-colors">
                 ✕
               </button>
             </div>
@@ -226,7 +230,7 @@ export default function Products() {
               onChange={change}
               placeholder="Name"
               required
-              className="w-full rounded border border-gray-300 p-2 text-sm"
+              className="w-full rounded-lg bg-slate-900/60 border border-slate-700 p-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50"
             />
 
             <div className="grid grid-cols-2 gap-3">
@@ -236,7 +240,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="SKU"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg bg-slate-900/60 border border-slate-700 p-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50"
               />
               <input
                 name="barcode"
@@ -244,7 +248,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="Barcode"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg bg-slate-900/60 border border-slate-700 p-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50"
               />
               <input
                 name="costPrice"
@@ -255,7 +259,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="Cost Price"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg bg-slate-900/60 border border-slate-700 p-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50"
               />
               <input
                 name="sellingPrice"
@@ -266,7 +270,7 @@ export default function Products() {
                 onChange={change}
                 placeholder="Selling Price"
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg bg-slate-900/60 border border-slate-700 p-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50"
               />
             </div>
 
@@ -274,14 +278,14 @@ export default function Products() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="btn-secondary px-3 py-1.5"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-60"
+                className="btn-primary px-3 py-1.5"
               >
                 {saving ? "Saving..." : "Save Product"}
               </button>
@@ -291,27 +295,27 @@ export default function Products() {
       )}
 
       {adjustProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <form onSubmit={submitAdjust} className="w-full max-w-sm space-y-4 rounded-xl bg-white p-5 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+          <form onSubmit={submitAdjust} className="w-full max-w-sm space-y-4 rounded-xl bg-slate-800 border border-white/5 p-5 shadow-2xl fade-up">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Adjust Stock</h2>
-              <button type="button" onClick={closeAdjust} className="text-gray-500 hover:text-gray-700">
+              <h2 className="text-lg font-semibold text-slate-100">Adjust Stock</h2>
+              <button type="button" onClick={closeAdjust} className="text-slate-400 hover:text-slate-100 transition-colors">
                 ✕
               </button>
             </div>
 
-            <div className="text-sm text-gray-600">
-              Product: <span className="font-medium text-gray-900">{adjustProduct.name}</span>
+            <div className="text-sm text-slate-400">
+              Product: <span className="font-medium text-slate-100">{adjustProduct.name}</span>
             </div>
-            <div className="text-xs text-gray-500">Current total stock: {adjustProduct.totalStock}</div>
+            <div className="text-xs text-slate-500">Current total stock: {adjustProduct.totalStock}</div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Branch</label>
+              <label className="mb-1 block text-sm font-medium text-slate-300">Branch</label>
               <select
                 value={adjustBranchId}
                 onChange={(event) => setAdjustBranchId(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg bg-slate-900/60 border border-slate-700 p-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50"
               >
                 <option value="">Select branch</option>
                 {branches.map((branch) => (
@@ -323,7 +327,7 @@ export default function Products() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">New Quantity</label>
+              <label className="mb-1 block text-sm font-medium text-slate-300">New Quantity</label>
               <input
                 type="number"
                 min="0"
@@ -331,7 +335,7 @@ export default function Products() {
                 value={adjustQuantity}
                 onChange={(event) => setAdjustQuantity(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg bg-slate-900/60 border border-slate-700 p-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50"
               />
             </div>
 
@@ -339,14 +343,14 @@ export default function Products() {
               <button
                 type="button"
                 onClick={closeAdjust}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="btn-secondary px-3 py-1.5"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={adjustSaving}
-                className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-60"
+                className="btn-primary px-3 py-1.5"
               >
                 {adjustSaving ? "Saving..." : "Save"}
               </button>
@@ -355,14 +359,14 @@ export default function Products() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800 shadow-sm fade-up">
         {loading ? (
-          <div className="p-10 text-center text-sm text-gray-500">Loading products...</div>
+          <div className="p-10 text-center text-sm text-slate-400">Loading products...</div>
         ) : products.length === 0 ? (
-          <div className="p-10 text-center text-sm text-gray-500">No products found.</div>
+          <div className="p-10 text-center text-sm text-slate-400">No products found.</div>
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+          <table className="min-w-full divide-y divide-slate-700/50">
+            <thead className="bg-slate-800/50 text-left text-xs font-medium uppercase tracking-wide text-slate-400">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">SKU</th>
@@ -371,32 +375,32 @@ export default function Products() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
               {products.map((product) => (
-                <tr key={product._id} className="hover:bg-gray-50">
+                <tr key={product._id} className="group hover:bg-slate-700/40 transition-colors">
                   <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                    <div className="text-xs text-gray-500">Stock: {product.totalStock}</div>
+                    <div className="text-sm font-medium text-slate-100">{product.name}</div>
+                    <div className="text-xs text-slate-400">Stock: {product.totalStock}</div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
+                  <td className="px-4 py-3 text-sm text-slate-300">
                     <div>{product.SKU}</div>
-                    <div className="text-xs text-gray-500">{product.barcode}</div>
+                    <div className="text-xs text-slate-400">{product.barcode}</div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{money(product.costPrice)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{money(product.sellingPrice)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{money(product.costPrice)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{money(product.sellingPrice)}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-3">
                       <button
                         type="button"
                         onClick={() => openAdjust(product)}
-                        className="text-sm font-medium text-blue-600 hover:underline"
+                        className="text-sm font-medium text-amber-600 hover:text-amber-500 hover:underline"
                       >
                         Adjust Stock
                       </button>
                       <button
                         type="button"
                         onClick={() => void remove(product._id)}
-                        className="text-sm font-medium text-red-600 hover:underline"
+                        className="text-sm font-medium text-red-500 hover:text-red-400 hover:underline"
                       >
                         Delete
                       </button>
