@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import { useCountUp } from "./useCountUp";
 
 export interface StatCardProps {
   label: string;
@@ -8,6 +9,8 @@ export interface StatCardProps {
   trendUp?: boolean;
   color?: string;
   delay?: string;
+  numericValue?: number;
+  format?: (value: number) => string;
 }
 
 const colorStyles: Record<string, { bg: string; text: string }> = {
@@ -32,7 +35,12 @@ export function StatCard({
   trendUp,
   color = "default",
   delay,
+  numericValue,
+  format,
 }: StatCardProps) {
+  const animated = useCountUp(typeof numericValue === "number" ? numericValue : 0);
+  const display =
+    typeof numericValue === "number" && format ? format(animated) : value;
   const style = colorStyles[color] || colorStyles.default;
   return (
     <div
@@ -46,7 +54,7 @@ export function StatCard({
         </div>
       </div>
       <div className="flex items-end justify-between">
-        <p className="text-3xl font-bold text-slate-50">{value}</p>
+        <p className="text-3xl font-bold text-slate-50">{display}</p>
         {trend && (
           <span
             className={`text-sm font-medium ${trendUp ? "text-emerald-400" : "text-red-400"}`}

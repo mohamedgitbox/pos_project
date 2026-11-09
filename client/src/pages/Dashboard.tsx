@@ -50,10 +50,10 @@ export default function Dashboard() {
   }, []);
 
   const kpis = [
-    { label: "Today's Sales", value: dashboardData?.todaysSales || "$0.00", icon: DollarSign, color: "blue" },
-    { label: "Total Revenue (7 days)", value: dashboardData?.totalRevenue || "$0.00", icon: TrendingUp, color: "emerald" },
-    { label: "Low Stock Items", value: dashboardData?.lowStockCount || 0, icon: AlertTriangle, color: "amber" },
-    { label: "Active Branches", value: dashboardData?.activeBranchesCount || 0, icon: Building2, color: "violet" },
+    { label: "Today's Sales", value: dashboardData?.todaysSales || "$0.00", num: parseFloat(dashboardData?.todaysSales || "0") || 0, fmt: (n: number) => n.toFixed(2), icon: DollarSign, color: "blue" },
+    { label: "Total Revenue (7 days)", value: dashboardData?.totalRevenue || "$0.00", num: parseFloat(dashboardData?.totalRevenue || "0") || 0, fmt: (n: number) => n.toFixed(2), icon: TrendingUp, color: "emerald" },
+    { label: "Low Stock Items", value: dashboardData?.lowStockCount || 0, num: dashboardData?.lowStockCount || 0, fmt: (n: number) => String(Math.round(n)), icon: AlertTriangle, color: "amber" },
+    { label: "Active Branches", value: dashboardData?.activeBranchesCount || 0, num: dashboardData?.activeBranchesCount || 0, fmt: (n: number) => String(Math.round(n)), icon: Building2, color: "violet" },
   ];
 
   if (loading) {
@@ -87,6 +87,8 @@ export default function Dashboard() {
               key={kpi.label}
               label={kpi.label}
               value={typeof kpi.value === "number" ? kpi.value : money(kpi.value)}
+              numericValue={kpi.num}
+              format={kpi.fmt}
               icon={Icon}
               color={kpi.color}
               delay={`${idx * 100}ms`}
