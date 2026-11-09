@@ -65,36 +65,36 @@ export default function MySales() {
   }, [page]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-up">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Sales</h1>
-        <p className="text-sm text-gray-500">Sales you have recorded.</p>
+        <h1 className="text-2xl font-bold text-slate-50 tracking-tight">My Sales</h1>
+        <p className="text-sm text-slate-400">Sales you have recorded.</p>
       </div>
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
 
       {loading ? (
-        <div className="text-sm text-gray-500">Loading your sales...</div>
+        <div className="text-sm text-slate-400">Loading your sales...</div>
       ) : sales.length === 0 ? (
-        <div className="rounded-md bg-gray-50 px-4 py-3 text-sm text-gray-500">No sales found.</div>
+        <div className="card px-4 py-3 text-sm text-slate-400">No sales found.</div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto card">
+          <table className="min-w-full divide-y divide-slate-700/50">
+            <thead className="bg-slate-800/50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Invoice #</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Total</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Timestamp</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Invoice #</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Branch</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Total</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
               {sales.map((sale) => (
-                <tr key={sale._id}>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">#{sale.invoiceNo}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{sale.branch?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">${money(sale.totalAmount)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{formatDate(sale.timestamp)}</td>
+                <tr key={sale._id} className="hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
+                  <td className="px-4 py-3 text-sm font-medium text-slate-100">#{sale.invoiceNo}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{sale.branch?.name ?? "Unknown"}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-amber-500">${money(sale.totalAmount)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{formatDate(sale.timestamp)}</td>
                 </tr>
               ))}
             </tbody>
@@ -103,7 +103,7 @@ export default function MySales() {
       )}
 
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-slate-400">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total} total)
           </span>
@@ -111,14 +111,14 @@ export default function MySales() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={pagination.page <= 1}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-50"
             >
               Previous
             </button>
             <button
               onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
               disabled={pagination.page >= pagination.pages}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-50"
             >
               Next
             </button>
