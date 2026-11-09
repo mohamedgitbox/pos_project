@@ -17,6 +17,7 @@ import MySales from "./pages/MySales";
 import Inventory from "./pages/Inventory";
 import Users from "./pages/Users";
 import Branches from "./pages/Branches";
+import AuditLog from "./pages/AuditLog";
 import { Toaster } from "react-hot-toast";
 
 function Placeholder({ name }: { name: string }) {
@@ -36,7 +37,7 @@ export default function App() {
               <Route element={<ProtectedRoute requiredRoles={["ADMIN"]} />}>
                 <Route path="/branches" element={<Branches />} />
                 <Route path="/users" element={<Users />} />
-                <Route path="/audit-log" element={<Placeholder name="Audit Log" />} />
+                <Route path="/audit-log" element={<AuditLog />} />
               </Route>
               <Route element={<ProtectedRoute requiredRoles={["MANAGER", "ADMIN"]} />}>
                 <Route path="/products" element={<Products />} />
