@@ -3,6 +3,7 @@ import { DollarSign, TrendingUp, AlertTriangle, Building2 } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import { StatCard } from "../components/ui/StatCard";
 
 interface DashboardData {
   todaysSales: string;
@@ -49,64 +50,74 @@ export default function Dashboard() {
   }, []);
 
   const kpis = [
-    { label: "Today's Sales", value: dashboardData?.todaysSales || "$0.00", icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50" },
-    { label: "Total Revenue (7 days)", value: dashboardData?.totalRevenue || "$0.00", icon: TrendingUp, color: "text-green-600", bg: "bg-green-50" },
-    { label: "Low Stock Items", value: dashboardData?.lowStockCount || 0, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "Active Branches", value: dashboardData?.activeBranchesCount || 0, icon: Building2, color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "Today's Sales", value: dashboardData?.todaysSales || "$0.00", icon: DollarSign, color: "blue" },
+    { label: "Total Revenue (7 days)", value: dashboardData?.totalRevenue || "$0.00", icon: TrendingUp, color: "emerald" },
+    { label: "Low Stock Items", value: dashboardData?.lowStockCount || 0, icon: AlertTriangle, color: "amber" },
+    { label: "Active Branches", value: dashboardData?.activeBranchesCount || 0, icon: Building2, color: "violet" },
   ];
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
+      <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">
         {error}
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Welcome back, {user?.name}</h1>
+    <div className="space-y-6 fade-up">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-50 tracking-tight">Welcome back, {user?.name}</h1>
+        <p className="mt-1 text-sm text-slate-400">Here's what's happening with your POS today.</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {kpis.map((kpi) => {
+        {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div key={kpi.label} className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-gray-500">{kpi.label}</span>
-                <div className={`p-2 rounded-full ${kpi.bg}`}>
-                  <Icon size={20} className={kpi.color} />
-                </div>
-              </div>
-              <p className="text-2xl font-bold">{typeof kpi.value === "number" ? kpi.value : money(kpi.value)}</p>
-            </div>
+            <StatCard
+              key={kpi.label}
+              label={kpi.label}
+              value={typeof kpi.value === "number" ? kpi.value : money(kpi.value)}
+              icon={Icon}
+              color={kpi.color}
+              style={{ animationDelay: `${idx * 100}ms` }}
+            />
           );
         })}
       </div>
 
-      {/* Sales by Branch Chart */}
       {dashboardData?.salesByBranch && dashboardData.salesByBranch.length > 0 && (
-        <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Sales by Branch (Last 7 Days)</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dashboardData.salesByBranch.map((item) => ({
-                branch: item.branchName,
-                sales: parseFloat(item.total),
-              }))}>
-                <XAxis dataKey="branch" />
-                <YAxis />
-                <Tooltip formatter={(value: number) => [`$${value.toFixed(2)}`, "Sales"]} />
-                <Bar dataKey="sales" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
+        <div className="mt-8 fade-up delay-200">
+          <div className="digital-frame fade-up delay-200">
+            <div className="rounded-xl bg-slate-800 p-6">
+              <h2 className="text-lg font-semibold text-slate-50 mb-4">Sales by Branch (Last 7 Days)</h2>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dashboardData.salesByBranch.map((item) => ({
+                    branch: item.branchName,
+                    sales: parseFloat(item.total),
+                  }))}>
+                    <XAxis dataKey="branch" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "8px", color: "#f8fafc" }}
+                      itemStyle={{ color: "#d97706" }}
+                      formatter={(value: number) => [`$${value.toFixed(2)}`, "Sales"]}
+                    />
+                    <Bar dataKey="sales" fill="#d97706" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
       )}
