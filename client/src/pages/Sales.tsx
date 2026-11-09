@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import { X } from "lucide-react";
+import { X, ReceiptText, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import DataTable from "../components/ui/DataTable";
 
 interface SaleRow {
   _id: string;
@@ -118,95 +120,79 @@ export default function Sales() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
-        <p className="text-sm text-gray-500">Browse and inspect recorded sales.</p>
-      </div>
+      <PageHeader title="Sales" subtitle="Browse and inspect recorded sales." />
 
-      <div className="flex flex-wrap items-end gap-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-500">Branch</label>
-          <select
-            value={branchId}
-            onChange={(e) => {
-              setBranchId(e.target.value);
-              setPage(1);
-            }}
-            className="mt-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          >
-            <option value="">All branches</option>
-            {branches.map((branch) => (
-              <option key={branch._id} value={branch._id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-500">From</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => {
-              setStartDate(e.target.value);
-              setPage(1);
-            }}
-            className="mt-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-500">To</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => {
-              setEndDate(e.target.value);
-              setPage(1);
-            }}
-            className="mt-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-      </div>
-
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-
-      {loading ? (
-        <div className="text-sm text-gray-500">Loading sales...</div>
-      ) : sales.length === 0 ? (
-        <div className="rounded-md bg-gray-50 px-4 py-3 text-sm text-gray-500">No sales found.</div>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Invoice #</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Cashier</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Total</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {sales.map((sale) => (
-                <tr
-                  key={sale._id}
-                  onClick={() => void openDetail(sale._id)}
-                  className="cursor-pointer hover:bg-gray-50"
-                >
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">#{sale.invoiceNo}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{sale.branch?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{sale.user?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">${money(sale.totalAmount)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{formatDate(sale.timestamp)}</td>
-                </tr>
+      {/* Filters card */}
+      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-end gap-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-500">Branch</label>
+            <select
+              value={branchId}
+              onChange={(e) => {
+                setBranchId(e.target.value);
+                setPage(1);
+              }}
+              className="mt-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            >
+              <option value="">All branches</option>
+              {branches.map((branch) => (
+                <option key={branch._id} value={branch._id}>
+                  {branch.name}
+                </option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-500">From</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                setPage(1);
+              }}
+              className="mt-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-500">To</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => {
+                setEndDate(e.target.value);
+                setPage(1);
+              }}
+              className="mt-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            />
+          </div>
         </div>
-      )}
+      </div>
+
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+
+      <DataTable
+        headers={["Invoice #", "Branch", "Cashier", "Total", "Timestamp"]}
+        loading={loading}
+        isEmpty={sales.length === 0}
+        emptyIcon={ReceiptText}
+        emptyTitle="No sales found"
+        emptyMessage="Try adjusting the filters or date range."
+      >
+        {sales.map((sale) => (
+          <tr key={sale._id} onClick={() => void openDetail(sale._id)} className="cursor-pointer">
+            <td className="font-medium text-slate-900">#{sale.invoiceNo}</td>
+            <td>{sale.branch?.name ?? "Unknown"}</td>
+            <td>{sale.user?.name ?? "Unknown"}</td>
+            <td className="font-medium text-slate-900">${money(sale.totalAmount)}</td>
+            <td className="text-slate-500">{formatDate(sale.timestamp)}</td>
+          </tr>
+        ))}
+      </DataTable>
 
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-slate-500">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total} total)
           </span>
@@ -214,78 +200,88 @@ export default function Sales() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={pagination.page <= 1}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              Previous
+              <ChevronLeft size={14} /> Previous
             </button>
             <button
               onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
               disabled={pagination.page >= pagination.pages}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              Next
+              Next <ChevronRight size={14} />
             </button>
           </div>
         </div>
       )}
 
       {(detailLoading || detail) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-lg font-semibold text-slate-900">
                 {detail ? `Sale #${detail.invoiceNo}` : "Sale details"}
               </h2>
-              <button onClick={closeDetail} className="text-gray-400 hover:text-gray-600">
+              <button onClick={closeDetail} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                 <X size={20} />
               </button>
             </div>
             {detailLoading ? (
-              <div className="text-sm text-gray-500">Loading sale...</div>
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="h-8 animate-pulse rounded-md bg-slate-200" />
+                ))}
+              </div>
             ) : detailError ? (
-              <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{detailError}</div>
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{detailError}</div>
             ) : detail ? (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 p-4 text-sm">
                   <div>
-                    <span className="text-gray-500">Branch: </span>
-                    <span className="font-medium text-gray-900">{detail.branch?.name ?? "Unknown"}</span>
+                    <span className="text-slate-500">Branch: </span>
+                    <span className="font-medium text-slate-900">{detail.branch?.name ?? "Unknown"}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Cashier: </span>
-                    <span className="font-medium text-gray-900">{detail.user?.name ?? "Unknown"}</span>
+                    <span className="text-slate-500">Cashier: </span>
+                    <span className="font-medium text-slate-900">{detail.user?.name ?? "Unknown"}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Timestamp: </span>
-                    <span className="font-medium text-gray-900">{formatDate(detail.timestamp)}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Total: </span>
-                    <span className="font-medium text-gray-900">${money(detail.totalAmount)}</span>
+                    <span className="text-slate-500">Timestamp: </span>
+                    <span className="font-medium text-slate-900">{formatDate(detail.timestamp)}</span>
                   </div>
                 </div>
-                <div className="overflow-x-auto rounded-lg border border-gray-200">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Product</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Qty</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Price</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Subtotal</th>
+                <div className="overflow-x-auto rounded-xl border border-slate-100">
+                  <table className="min-w-full">
+                    <thead>
+                      <tr className="border-b border-slate-100 bg-slate-50/60 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+                        <th className="px-4 py-2.5 font-medium">Product</th>
+                        <th className="px-4 py-2.5 text-right font-medium">Qty</th>
+                        <th className="px-4 py-2.5 text-right font-medium">Price</th>
+                        <th className="px-4 py-2.5 text-right font-medium">Subtotal</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white">
+                    <tbody className="divide-y divide-slate-100">
                       {detail.items.map((item) => (
-                        <tr key={item._id}>
-                          <td className="px-4 py-2 text-sm text-gray-900">
+                        <tr key={item._id} className="hover:bg-slate-50">
+                          <td className="px-4 py-2.5 text-sm text-slate-900">
                             {item.product ? `${item.product.name} (${item.product.SKU})` : "Deleted product"}
                           </td>
-                          <td className="px-4 py-2 text-sm text-gray-700">{item.quantity}</td>
-                          <td className="px-4 py-2 text-sm text-gray-700">${money(item.price)}</td>
-                          <td className="px-4 py-2 text-sm text-gray-900">${money(item.subtotal)}</td>
+                          <td className="px-4 py-2.5 text-right text-sm text-slate-700">{item.quantity}</td>
+                          <td className="px-4 py-2.5 text-right text-sm text-slate-700">${money(item.price)}</td>
+                          <td className="px-4 py-2.5 text-right text-sm font-medium text-slate-900">${money(item.subtotal)}</td>
                         </tr>
                       ))}
                     </tbody>
+                    <tfoot>
+                      <tr className="border-t-2 border-slate-200 bg-slate-50/60">
+                        <td colSpan={3} className="px-4 py-3 text-right text-sm font-bold text-slate-900">
+                          Total
+                        </td>
+                        <td className="px-4 py-3 text-right text-base font-bold text-slate-900">
+                          ${money(detail.totalAmount)}
+                        </td>
+                      </tr>
+                    </tfoot>
                   </table>
                 </div>
               </div>

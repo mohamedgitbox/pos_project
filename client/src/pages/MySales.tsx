@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { ReceiptText, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import DataTable from "../components/ui/DataTable";
 
 interface MySaleRow {
   _id: string;
@@ -66,44 +69,30 @@ export default function MySales() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Sales</h1>
-        <p className="text-sm text-gray-500">Sales you have recorded.</p>
-      </div>
+      <PageHeader title="My Sales" subtitle="Sales you have recorded." />
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
-      {loading ? (
-        <div className="text-sm text-gray-500">Loading your sales...</div>
-      ) : sales.length === 0 ? (
-        <div className="rounded-md bg-gray-50 px-4 py-3 text-sm text-gray-500">No sales found.</div>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Invoice #</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Total</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {sales.map((sale) => (
-                <tr key={sale._id}>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">#{sale.invoiceNo}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{sale.branch?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">${money(sale.totalAmount)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{formatDate(sale.timestamp)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        headers={["Invoice #", "Branch", "Total", "Timestamp"]}
+        loading={loading}
+        isEmpty={sales.length === 0}
+        emptyIcon={ReceiptText}
+        emptyTitle="No sales yet"
+        emptyMessage="Sales you complete in the POS will appear here."
+      >
+        {sales.map((sale) => (
+          <tr key={sale._id}>
+            <td className="font-medium text-slate-900">#{sale.invoiceNo}</td>
+            <td>{sale.branch?.name ?? "Unknown"}</td>
+            <td className="font-medium text-slate-900">${money(sale.totalAmount)}</td>
+            <td className="text-slate-500">{formatDate(sale.timestamp)}</td>
+          </tr>
+        ))}
+      </DataTable>
 
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-slate-500">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total} total)
           </span>
@@ -111,16 +100,16 @@ export default function MySales() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={pagination.page <= 1}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              Previous
+              <ChevronLeft size={14} /> Previous
             </button>
             <button
               onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
               disabled={pagination.page >= pagination.pages}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              Next
+              Next <ChevronRight size={14} />
             </button>
           </div>
         </div>
