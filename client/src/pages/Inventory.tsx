@@ -1,5 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
+import { Boxes, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import DataTable from "../components/ui/DataTable";
+import StatusBadge from "../components/ui/StatusBadge";
 
 interface InventoryRow {
   _id: string;
@@ -81,71 +85,67 @@ export default function Inventory() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
-        <p className="text-sm text-gray-500">Stock levels across branches (items under {LOW_STOCK_THRESHOLD} units are highlighted).</p>
-      </div>
+      <PageHeader
+        title="Inventory"
+        subtitle="Stock levels across branches."
+      />
 
-      <div className="flex flex-wrap items-end gap-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-500">Branch</label>
-          <select
-            value={branchId}
-            onChange={(e) => {
-              setBranchId(e.target.value);
-              setPage(1);
-            }}
-            className="mt-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          >
-            <option value="">All branches</option>
-            {branches.map((branch) => (
-              <option key={branch._id} value={branch._id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-
-      {loading ? (
-        <div className="text-sm text-gray-500">Loading inventory...</div>
-      ) : rows.length === 0 ? (
-        <div className="rounded-md bg-gray-50 px-4 py-3 text-sm text-gray-500">No inventory records found.</div>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Product</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">SKU</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Cost</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Price</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Quantity</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {rows.map((row) => (
-                <tr key={row._id}>
-                  <td className="px-4 py-3 text-sm text-gray-900">{row.product?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{row.product?.SKU ?? "-"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{row.branch?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">${money(row.product?.costPrice ?? "0")}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">${money(row.product?.sellingPrice ?? "0")}</td>
-                  <td className={`px-4 py-3 text-sm font-medium ${row.quantity < LOW_STOCK_THRESHOLD ? "text-red-600" : "text-gray-900"}`}>
-                    {row.quantity}
-                  </td>
-                </tr>
+      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-end gap-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-500">Branch</label>
+            <select
+              value={branchId}
+              onChange={(e) => {
+                setBranchId(e.target.value);
+                setPage(1);
+              }}
+              className="mt-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            >
+              <option value="">All branches</option>
+              {branches.map((branch) => (
+                <option key={branch._id} value={branch._id}>
+                  {branch.name}
+                </option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </div>
         </div>
-      )}
+      </div>
+
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+
+      <DataTable
+        headers={["Product", "SKU", "Branch", "Cost", "Price", "Quantity"]}
+        loading={loading}
+        isEmpty={rows.length === 0}
+        emptyIcon={Boxes}
+        emptyTitle="No inventory records found"
+        emptyMessage="Stock will appear here once products are added to branches."
+      >
+        {rows.map((row) => (
+          <tr key={row._id}>
+            <td className="font-medium text-slate-900">{row.product?.name ?? "Unknown"}</td>
+            <td>{row.product?.SKU ?? "-"}</td>
+            <td>{row.branch?.name ?? "Unknown"}</td>
+            <td>${money(row.product?.costPrice ?? "0")}</td>
+            <td>${money(row.product?.sellingPrice ?? "0")}</td>
+            <td>
+              {row.quantity < LOW_STOCK_THRESHOLD ? (
+                <div className="flex items-center gap-2">
+                  <StatusBadge variant="danger">Low stock</StatusBadge>
+                  <span className="text-sm font-medium text-slate-900">{row.quantity}</span>
+                </div>
+              ) : (
+                <span className="font-medium text-slate-900">{row.quantity}</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </DataTable>
 
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-slate-500">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total} total)
           </span>
@@ -153,16 +153,16 @@ export default function Inventory() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={pagination.page <= 1}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              Previous
+              <ChevronLeft size={14} /> Previous
             </button>
             <button
               onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
               disabled={pagination.page >= pagination.pages}
-              className="rounded-md border border-gray-300 px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              Next
+              Next <ChevronRight size={14} />
             </button>
           </div>
         </div>
