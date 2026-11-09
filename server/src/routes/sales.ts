@@ -10,6 +10,7 @@ import { getNextSequence } from "../services/counterService";
 
 const router = Router();
 const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid id");
+const idSchema = objectIdSchema;
 
 const checkoutSchema = z.object({
   branchId: objectIdSchema,
@@ -185,6 +186,197 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
     return fail(res, error, "Checkout failed");
   } finally {
     await session.endSession();
+  }
+});
+
+// Get all sales (ADMIN/MANAGER)
+router.get("/", requireRole("ADMIN", "MANAGER"), async (req: Request, res: Response) => {
+  try {
+    console.log("GET /api/v1/sales called");
+    const { page = 1, limit = 20, startDate, endDate, branchId } = req.query;
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+
+    const filter: Record<string, unknown> = {};
+
+    if (startDate || endDate) {
+      const timestampFilter: Record<string, Date> = {};
+      if (startDate) timestampFilter.$gte = new Date(String(startDate));
+      if (endDate) timestampFilter.$lte = new Date(String(endDate));
+      filter.timestamp = timestampFilter;
+    }
+
+    if (branchId) {
+      if (!mongoose.Types.ObjectId.isValid(String(branchId))) {
+        return res.status(400).json({ success: false, error: "Invalid branch ID" });
+      }
+      filter.branchId = new mongoose.Types.ObjectId(String(branchId));
+    }
+
+    if (req.user?.role !== "ADMIN") {
+      const userBranchId = req.user?.branchId ? String(req.user.branchId) : null;
+      if (userBranchId) {
+        filter.branchId = new mongoose.Types.ObjectId(userBranchId);
+      }
+    }
+
+    console.log("Filter:", filter);
+    const [sales, total] = await Promise.all([
+      Sale.find(filter)
+        .populate("branchId", "name")
+        .populate("userId", "name email")
+        .sort({ timestamp: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum)
+        .lean(),
+      Sale.countDocuments(filter),
+    ]);
+
+    const formattedSales = sales.map((sale) => {
+      const branch = sale.branchId as { _id: mongoose.Types.ObjectId; name: string } | mongoose.Types.ObjectId | null;
+      const user = sale.userId as { _id: mongoose.Types.ObjectId; name: string; email: string } | mongoose.Types.ObjectId | null;
+      
+      const branchId = branch && typeof branch === "object" && "_id" in branch ? String(branch._id) : branch ? String(branch) : "";
+      const branchName = branch && typeof branch === "object" && "name" in branch ? branch.name : "Unknown";
+      const userId = user && typeof user === "object" && "_id" in user ? String(user._id) : user ? String(user) : "";
+      const userName = user && typeof user === "object" && "name" in user ? user.name : "Unknown";
+      const userEmail = user && typeof user === "object" && "email" in user ? user.email : "";
+      
+      return {
+        _id: String(sale._id),
+        invoiceNo: sale.invoiceNo,
+        branch: { _id: branchId, name: branchName },
+        user: { _id: userId, name: userName, email: userEmail },
+        totalAmount: sale.totalAmount?.toString() || "0",
+        timestamp: sale.timestamp?.toISOString() || "",
+      };
+    });
+
+    return res.json({
+      success: true,
+      data: formattedSales,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        pages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (error) {
+    return fail(res, error, "Failed to load sales");
+  }
+});
+
+// Get single sale
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = z.object({ id: idSchema }).parse(req.params);
+
+    interface PopulatedSaleSingle {
+      _id: unknown;
+      invoiceNo: string;
+      branchId: { _id: unknown; name: string };
+      userId: { _id: unknown; name: string; email: string };
+      totalAmount: { toString(): string };
+      timestamp: Date;
+    }
+
+    interface PopulatedSaleItem {
+      _id: unknown;
+      productId: { _id: unknown; name: string; SKU: string; barcode: string };
+      quantity: number;
+      price: { toString(): string };
+      subtotal: { toString(): string };
+    }
+
+    const sale = (await Sale.findById(id)
+      .populate("branchId", "name")
+      .populate("userId", "name email")
+      .lean()) as unknown as PopulatedSaleSingle | null;
+
+    if (!sale) {
+      return res.status(404).json({ success: false, error: "Sale not found" });
+    }
+
+    const saleItems = (await SaleItem.find({ saleId: id })
+      .populate("productId", "name SKU barcode")
+      .lean()) as unknown as PopulatedSaleItem[];
+
+    const formattedItems = saleItems.map((item) => ({
+      _id: String(item._id),
+      product: { _id: String(item.productId._id), name: item.productId.name, SKU: item.productId.SKU, barcode: item.productId.barcode },
+      quantity: item.quantity,
+      price: item.price.toString(),
+      subtotal: item.subtotal.toString(),
+    }));
+
+    const formattedSale = {
+      _id: String(sale._id),
+      invoiceNo: sale.invoiceNo,
+      branch: { _id: String(sale.branchId._id), name: sale.branchId.name },
+      user: { _id: String(sale.userId._id), name: sale.userId.name, email: sale.userId.email },
+      totalAmount: sale.totalAmount.toString(),
+      timestamp: sale.timestamp.toISOString(),
+      items: formattedItems,
+    };
+
+    return res.json({ success: true, data: formattedSale });
+  } catch (error) {
+    return fail(res, error, "Failed to load sale");
+  }
+});
+
+// Get current user's sales
+router.get("/my-sales", async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
+    const { page = 1, limit = 20 } = req.query;
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+
+    const userObjectId = new mongoose.Types.ObjectId(String(req.user._id));
+
+    interface MySale {
+      _id: unknown;
+      invoiceNo: string;
+      branchId: { _id: unknown; name: string };
+      totalAmount: { toString(): string };
+      timestamp: Date;
+    }
+
+    const [sales, total] = await Promise.all([
+      Sale.find({ userId: userObjectId })
+        .populate("branchId", "name")
+        .sort({ timestamp: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum)
+        .lean(),
+      Sale.countDocuments({ userId: userObjectId }),
+    ]) as unknown as [MySale[], number];
+
+    const formattedSales = sales.map((sale) => ({
+      _id: String(sale._id),
+      invoiceNo: sale.invoiceNo,
+      branch: { _id: String(sale.branchId._id), name: sale.branchId.name },
+      totalAmount: sale.totalAmount.toString(),
+      timestamp: sale.timestamp.toISOString(),
+    }));
+
+    return res.json({
+      success: true,
+      data: formattedSales,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        pages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (error) {
+    return fail(res, error, "Failed to load my sales");
   }
 });
 

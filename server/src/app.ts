@@ -9,6 +9,10 @@ import saleRouter from "./routes/sales";
 import purchaseOrderRouter from "./routes/purchaseOrders";
 import transferRouter from "./routes/transfers";
 import branchRouter from "./routes/branches";
+import userRouter from "./routes/users";
+import inventoryRouter from "./routes/inventory";
+import reportRouter from "./routes/reports";
+import auditLogRouter from "./routes/auditLog";
 
 const app = express();
 
@@ -37,17 +41,16 @@ app.use(express.json());
 // Apply rate limiting to login endpoint
 app.use("/api/v1/auth/login", loginLimiter);
 
-import inventoryRouter from "./routes/inventory";
-import reportRouter from "./routes/reports";
-
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/sales", saleRouter);
 app.use("/api/v1/purchase-orders", purchaseOrderRouter);
 app.use("/api/v1/transfers", transferRouter);
 app.use("/api/v1/branches", branchRouter);
+app.use("/api/v1/users", userRouter);
 app.use("/api/v1/inventory", inventoryRouter);
 app.use("/api/v1/reports", reportRouter);
+app.use("/api/v1/audit-log", auditLogRouter);
 
 app.get("/api/v1/health", (_req, res) => {
   res.json({ success: true, status: "ok" });
