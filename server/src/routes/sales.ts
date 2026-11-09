@@ -136,6 +136,8 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
     const userObjectId = new mongoose.Types.ObjectId(String(req.user._id));
     let response: CheckoutResponse | undefined;
 
+    const sortedItems = [...data.items].sort((a, b) => a.productId.localeCompare(b.productId));
+
     await session.withTransaction(async () => {
       const invoiceNo = await getNextSequence("invoiceNo", session);
 
@@ -143,7 +145,7 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
       let calculatedTotal = new Decimal(0);
       const saleItems = [];
 
-      for (const item of data.items) {
+      for (const item of sortedItems) {
         const product = await Product.findById(item.productId).session(session);
         if (!product) {
           throw new Error(`Product ${item.productId} not found`);
