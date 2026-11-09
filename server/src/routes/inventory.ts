@@ -6,8 +6,10 @@ import { requireRole } from "../middleware/rbac";
 
 const router = Router();
 
+router.use(authMiddleware);
+
 // Get products with their stock for a specific branch
-router.get("/branch/:branchId", authMiddleware, async (req: Request, res: Response) => {
+router.get("/branch/:branchId", async (req: Request, res: Response) => {
   try {
     const branchId = req.params.branchId as string;
 

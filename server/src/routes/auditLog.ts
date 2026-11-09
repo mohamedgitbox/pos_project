@@ -39,13 +39,22 @@ interface AuditLogDoc {
   timestamp: Date;
 }
 
+function toIdString(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "object") {
+    const obj = value as { _id?: unknown };
+    return obj._id ? String(obj._id) : null;
+  }
+  return String(value);
+}
+
 function serializeAuditLog(log: AuditLogDoc): Record<string, unknown> {
   return {
     _id: String(log._id),
-    userId: String(log.userId),
+    userId: toIdString(log.userId),
     action: log.action,
     entityType: log.entityType,
-    entityId: String(log.entityId),
+    entityId: toIdString(log.entityId),
     before: log.before,
     after: log.after,
     ipAddress: log.ipAddress,

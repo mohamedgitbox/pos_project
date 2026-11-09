@@ -50,12 +50,19 @@ interface UserDoc {
 }
 
 function serializeUser(user: UserDoc): Record<string, unknown> {
+  const b = user.branchId as unknown;
+  const branchId =
+    !b ? null
+    : typeof b === "object" && b !== null && "_id" in (b as Record<string, unknown>)
+      ? String((b as { _id: unknown })._id)
+      : String(b);
+
   return {
     _id: String(user._id),
     name: user.name,
     email: user.email,
     role: user.role,
-    branchId: user.branchId ? String(user.branchId) : null,
+    branchId,
     createdAt: user.createdAt?.toISOString(),
   };
 }

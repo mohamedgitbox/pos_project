@@ -201,8 +201,20 @@ router.get("/", requireRole("ADMIN", "MANAGER"), async (req: Request, res: Respo
 
     if (startDate || endDate) {
       const timestampFilter: Record<string, Date> = {};
-      if (startDate) timestampFilter.$gte = new Date(String(startDate));
-      if (endDate) timestampFilter.$lte = new Date(String(endDate));
+      if (startDate) {
+        const d = new Date(String(startDate));
+        if (isNaN(d.getTime())) {
+          return res.status(400).json({ success: false, error: "Invalid startDate" });
+        }
+        timestampFilter.$gte = d;
+      }
+      if (endDate) {
+        const d = new Date(String(endDate));
+        if (isNaN(d.getTime())) {
+          return res.status(400).json({ success: false, error: "Invalid endDate" });
+        }
+        timestampFilter.$lte = d;
+      }
       filter.timestamp = timestampFilter;
     }
 
@@ -267,65 +279,6 @@ router.get("/", requireRole("ADMIN", "MANAGER"), async (req: Request, res: Respo
   }
 });
 
-// Get single sale
-router.get("/:id", async (req: Request, res: Response) => {
-  try {
-    const { id } = z.object({ id: idSchema }).parse(req.params);
-
-    interface PopulatedSaleSingle {
-      _id: unknown;
-      invoiceNo: string;
-      branchId: { _id: unknown; name: string };
-      userId: { _id: unknown; name: string; email: string };
-      totalAmount: { toString(): string };
-      timestamp: Date;
-    }
-
-    interface PopulatedSaleItem {
-      _id: unknown;
-      productId: { _id: unknown; name: string; SKU: string; barcode: string };
-      quantity: number;
-      price: { toString(): string };
-      subtotal: { toString(): string };
-    }
-
-    const sale = (await Sale.findById(id)
-      .populate("branchId", "name")
-      .populate("userId", "name email")
-      .lean()) as unknown as PopulatedSaleSingle | null;
-
-    if (!sale) {
-      return res.status(404).json({ success: false, error: "Sale not found" });
-    }
-
-    const saleItems = (await SaleItem.find({ saleId: id })
-      .populate("productId", "name SKU barcode")
-      .lean()) as unknown as PopulatedSaleItem[];
-
-    const formattedItems = saleItems.map((item) => ({
-      _id: String(item._id),
-      product: { _id: String(item.productId._id), name: item.productId.name, SKU: item.productId.SKU, barcode: item.productId.barcode },
-      quantity: item.quantity,
-      price: item.price.toString(),
-      subtotal: item.subtotal.toString(),
-    }));
-
-    const formattedSale = {
-      _id: String(sale._id),
-      invoiceNo: sale.invoiceNo,
-      branch: { _id: String(sale.branchId._id), name: sale.branchId.name },
-      user: { _id: String(sale.userId._id), name: sale.userId.name, email: sale.userId.email },
-      totalAmount: sale.totalAmount.toString(),
-      timestamp: sale.timestamp.toISOString(),
-      items: formattedItems,
-    };
-
-    return res.json({ success: true, data: formattedSale });
-  } catch (error) {
-    return fail(res, error, "Failed to load sale");
-  }
-});
-
 // Get current user's sales
 router.get("/my-sales", async (req: Request, res: Response) => {
   try {
@@ -377,6 +330,72 @@ router.get("/my-sales", async (req: Request, res: Response) => {
     });
   } catch (error) {
     return fail(res, error, "Failed to load my sales");
+  }
+});
+
+// Get single sale
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = z.object({ id: idSchema }).parse(req.params);
+
+    interface PopulatedSaleSingle {
+      _id: unknown;
+      invoiceNo: string;
+      branchId: { _id: unknown; name: string };
+      userId: { _id: unknown; name: string; email: string };
+      totalAmount: { toString(): string };
+      timestamp: Date;
+    }
+
+    interface PopulatedSaleItem {
+      _id: unknown;
+      productId: { _id: unknown; name: string; SKU: string; barcode: string };
+      quantity: number;
+      price: { toString(): string };
+      subtotal: { toString(): string };
+    }
+
+    const sale = (await Sale.findById(id)
+      .populate("branchId", "name")
+      .populate("userId", "name email")
+      .lean()) as unknown as PopulatedSaleSingle | null;
+
+    if (!sale) {
+      return res.status(404).json({ success: false, error: "Sale not found" });
+    }
+
+    const saleItems = (await SaleItem.find({ saleId: id })
+      .populate("productId", "name SKU barcode")
+      .lean()) as unknown as PopulatedSaleItem[];
+
+    const formattedItems = saleItems.map((item) => ({
+      _id: String(item._id),
+      product: item.productId
+        ? {
+            _id: String(item.productId._id),
+            name: item.productId.name,
+            SKU: item.productId.SKU,
+            barcode: item.productId.barcode,
+          }
+        : null,
+      quantity: item.quantity,
+      price: item.price.toString(),
+      subtotal: item.subtotal.toString(),
+    }));
+
+    const formattedSale = {
+      _id: String(sale._id),
+      invoiceNo: sale.invoiceNo,
+      branch: { _id: String(sale.branchId._id), name: sale.branchId.name },
+      user: { _id: String(sale.userId._id), name: sale.userId.name, email: sale.userId.email },
+      totalAmount: sale.totalAmount.toString(),
+      timestamp: sale.timestamp.toISOString(),
+      items: formattedItems,
+    };
+
+    return res.json({ success: true, data: formattedSale });
+  } catch (error) {
+    return fail(res, error, "Failed to load sale");
   }
 });
 
