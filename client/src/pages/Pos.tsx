@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { PackageSearch } from "lucide-react";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/ui/PageHeader";
+import EmptyState from "../components/ui/EmptyState";
+import { Skeleton } from "../components/ui/Skeleton";
 
 interface Product {
   _id: string;
@@ -202,40 +206,45 @@ export default function Pos() {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-4 lg:col-span-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold text-gray-900">POS</h1>
-          {!user?.branchId && (
-            <select
-              value={selectedBranchId}
-              onChange={(event) => setSelectedBranchId(event.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select branch</option>
-              {branches.map((branch) => (
-                <option key={branch._id} value={branch._id}>
-                  {branch.name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+        <PageHeader
+          title="POS"
+          subtitle="Ring up sales and manage the current cart."
+          actions={
+            !user?.branchId && (
+              <select
+                value={selectedBranchId}
+                onChange={(event) => setSelectedBranchId(event.target.value)}
+                className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+              >
+                <option value="">Select branch</option>
+                {branches.map((branch) => (
+                  <option key={branch._id} value={branch._id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            )
+          }
+        />
 
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search products by name, SKU, or barcode..."
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
         />
 
-        {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+        {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
         {loading ? (
-          <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">
-            Loading products...
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton key={index} className="h-28 rounded-2xl" />
+            ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">
-            No products found.
+          <div className="rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <EmptyState icon={PackageSearch} title="No products found" message="Try a different search term or check back later." />
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -245,12 +254,24 @@ export default function Pos() {
                 type="button"
                 onClick={() => addToCart(product)}
                 disabled={product.stock <= 0}
-                className="rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-2xl border border-slate-100 bg-white p-4 text-left shadow-sm transition hover:border-emerald-300 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <div className="text-sm font-semibold text-gray-900">{product.name}</div>
-                <div className="mt-1 text-xs text-gray-500">{product.SKU}</div>
-                <div className="mt-3 text-sm font-bold text-blue-700">{money(product.sellingPrice)}</div>
-                <div className="mt-1 text-xs text-gray-500">Stock: {product.stock}</div>
+                <div className="text-sm font-semibold text-slate-900">{product.name}</div>
+                <div className="mt-1 text-xs text-slate-400">{product.SKU}</div>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-sm font-bold text-emerald-600">{money(product.sellingPrice)}</span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      product.stock <= 0
+                        ? "bg-red-50 text-red-600"
+                        : product.stock < 10
+                          ? "bg-amber-50 text-amber-600"
+                          : "bg-emerald-50 text-emerald-600"
+                    }`}
+                  >
+                    {product.stock} in stock
+                  </span>
+                </div>
               </button>
             ))}
           </div>
@@ -258,36 +279,36 @@ export default function Pos() {
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900">Cart</h2>
+        <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">Cart</h2>
 
           {cart.length === 0 ? (
-            <div className="py-10 text-center text-sm text-gray-500">Cart is empty.</div>
+            <div className="py-10 text-center text-sm text-slate-500">Cart is empty.</div>
           ) : (
             <div className="mt-4 space-y-3">
               {cart.map((item) => (
-                <div key={item._id} className="border-b border-gray-100 pb-3">
+                <div key={item._id} className="border-b border-slate-100 pb-3">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                    <div className="text-sm font-semibold text-gray-900">
+                    <div className="text-sm font-medium text-slate-900">{item.name}</div>
+                    <div className="text-sm font-semibold text-slate-900">
                       {money(Number(item.sellingPrice) * item.quantity)}
                     </div>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <div className="text-xs text-gray-500">{money(item.sellingPrice)} each</div>
+                    <div className="text-xs text-slate-400">{money(item.sellingPrice)} each</div>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                        className="h-7 w-7 rounded border border-gray-300 text-sm hover:bg-gray-50"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 transition hover:bg-slate-50"
                       >
                         -
                       </button>
-                      <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                      <span className="w-8 text-center text-sm font-semibold text-slate-900">{item.quantity}</span>
                       <button
                         type="button"
                         onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        className="h-7 w-7 rounded border border-gray-300 text-sm hover:bg-gray-50"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 transition hover:bg-slate-50"
                       >
                         +
                       </button>
@@ -296,7 +317,7 @@ export default function Pos() {
                 </div>
               ))}
 
-              <div className="flex items-center justify-between pt-2 text-base font-bold text-gray-900">
+              <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
                 <span>Total</span>
                 <span>{money(total)}</span>
               </div>
@@ -305,7 +326,7 @@ export default function Pos() {
                 type="button"
                 onClick={() => void checkout()}
                 disabled={checkingOut || cart.length === 0 || !branchId}
-                className="w-full rounded-md bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {checkingOut ? "Processing..." : "Checkout"}
               </button>
@@ -314,34 +335,34 @@ export default function Pos() {
         </div>
 
         {receipt && (
-          <div id="receipt" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">{receipt.branch?.name ?? "Receipt"}</h2>
-            <div className="mt-3 space-y-1 text-sm text-gray-700">
+          <div id="receipt" className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">{receipt.branch?.name ?? "Receipt"}</h2>
+            <div className="mt-3 space-y-1 text-sm text-slate-700">
               <div>Invoice: {receipt.invoiceNo}</div>
               <div>Cashier: {receipt.user?.name ?? "Unknown"}</div>
-              <div className="text-xs text-gray-500">{new Date(receipt.timestamp).toLocaleString()}</div>
+              <div className="text-xs text-slate-500">{new Date(receipt.timestamp).toLocaleString()}</div>
             </div>
             <table className="mt-3 w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
+                <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
                   <th className="py-1 pr-2 font-medium">Item</th>
                   <th className="py-1 pr-2 text-right font-medium">Qty</th>
                   <th className="py-1 pr-2 text-right font-medium">Price</th>
                   <th className="py-1 text-right font-medium">Subtotal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {receipt.items.map((item) => (
                   <tr key={item.product?._id}>
-                    <td className="py-1 pr-2 text-gray-900">{item.product?.name ?? "Deleted product"}</td>
-                    <td className="py-1 pr-2 text-right text-gray-700">{item.quantity}</td>
-                    <td className="py-1 pr-2 text-right text-gray-700">{money(item.price)}</td>
-                    <td className="py-1 text-right text-gray-900">{money(item.subtotal)}</td>
+                    <td className="py-1 pr-2 text-slate-900">{item.product?.name ?? "Deleted product"}</td>
+                    <td className="py-1 pr-2 text-right text-slate-700">{item.quantity}</td>
+                    <td className="py-1 pr-2 text-right text-slate-700">{money(item.price)}</td>
+                    <td className="py-1 text-right text-slate-900">{money(item.subtotal)}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t border-gray-300 text-base font-bold text-gray-900">
+                <tr className="border-t border-slate-300 text-base font-bold text-slate-900">
                   <td className="py-2 pr-2">Total</td>
                   <td />
                   <td />
@@ -349,11 +370,11 @@ export default function Pos() {
                 </tr>
               </tfoot>
             </table>
-            <div className="mt-3 text-center text-sm text-gray-500">Thank you for your purchase!</div>
+            <div className="mt-3 text-center text-sm text-slate-500">Thank you for your purchase!</div>
             <button
               type="button"
               onClick={() => window.print()}
-              className="print:hidden mt-4 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
+              className="print:hidden mt-4 w-full rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
               Print Receipt
             </button>
