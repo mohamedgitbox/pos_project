@@ -6,6 +6,7 @@ export interface IProduct extends Document {
   barcode: string;
   costPrice: mongoose.Types.Decimal128;
   sellingPrice: mongoose.Types.Decimal128;
+  isDeleted: Boolean;
 }
 
 const productSchema = new Schema<IProduct>(
