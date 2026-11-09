@@ -14,6 +14,7 @@ export interface ISaleItem extends Document {
   productId: mongoose.Types.ObjectId;
   quantity: number;
   price: mongoose.Types.Decimal128;
+  subtotal: mongoose.Types.Decimal128;
 }
 
 const saleSchema = new Schema<ISale>(
@@ -73,6 +74,10 @@ const saleItemSchema = new Schema<ISaleItem>(
       min: 1,
     },
     price: {
+      type: Schema.Types.Decimal128,
+      required: true,
+    },
+    subtotal: {
       type: Schema.Types.Decimal128,
       required: true,
     },

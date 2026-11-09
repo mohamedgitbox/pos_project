@@ -380,7 +380,9 @@ router.get("/:id", async (req: Request, res: Response) => {
         : null,
       quantity: item.quantity,
       price: item.price.toString(),
-      subtotal: item.subtotal.toString(),
+      subtotal: item.subtotal
+        ? item.subtotal.toString()
+        : new Decimal(item.price.toString()).mul(item.quantity).toFixed(2),
     }));
 
     const formattedSale = {
