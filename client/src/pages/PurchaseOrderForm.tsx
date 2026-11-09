@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/ui/PageHeader";
 
 interface Branch {
   _id: string;
@@ -147,35 +148,35 @@ export default function PurchaseOrderForm() {
   };
 
   if (!canManage) {
-    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can create purchase orders.</div>;
+    return <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can create purchase orders.</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">New Purchase Order</h1>
-          <p className="text-sm text-gray-500">Add supplier, branch, and ordered items.</p>
-        </div>
-        <Link to="/purchase-orders" className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
-          Back
-        </Link>
-      </div>
+      <PageHeader
+        title="New Purchase Order"
+        subtitle="Add supplier, branch, and ordered items."
+        actions={
+          <Link to="/purchase-orders" className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50">
+            Back
+          </Link>
+        }
+      />
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       {loading ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">Loading form data...</div>
+        <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">Loading form data...</div>
       ) : (
         <form onSubmit={submit} className="space-y-6">
-          <div className="grid gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:grid-cols-2">
+          <div className="grid gap-4 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Supplier Name</label>
               <input
                 value={supplierName}
                 onChange={(event) => setSupplierName(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
             </div>
             <div>
@@ -184,7 +185,7 @@ export default function PurchaseOrderForm() {
                 value={branchId}
                 onChange={(event) => setBranchId(event.target.value)}
                 required
-                className="w-full rounded border border-gray-300 p-2 text-sm"
+                className="w-full rounded-lg border border-slate-200 p-2.5 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               >
                 <option value="">Select branch</option>
                 {branches.map((branch) => (
@@ -196,7 +197,7 @@ export default function PurchaseOrderForm() {
             </div>
           </div>
 
-          <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="space-y-4 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Items</h2>
               <button type="button" onClick={addItem} className="rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50">
@@ -206,12 +207,12 @@ export default function PurchaseOrderForm() {
 
             <div className="space-y-4">
               {items.map((item, index) => (
-                <div key={index} className="grid gap-3 rounded-lg border border-gray-200 p-4 md:grid-cols-12">
+                <div key={index} className="grid gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 md:grid-cols-12">
                   <select
                     value={item.productId}
                     onChange={(event) => updateItem(index, "productId", event.target.value)}
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-5"
+                    className="rounded-lg border border-slate-200 p-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100 md:col-span-5"
                   >
                     <option value="">Select product</option>
                     {products.map((product) => (
@@ -228,7 +229,7 @@ export default function PurchaseOrderForm() {
                     onChange={(event) => updateItem(index, "orderedQty", event.target.value)}
                     placeholder="Qty"
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-2"
+                    className="rounded-lg border border-slate-200 p-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100 md:col-span-2"
                   />
                   <input
                     type="number"
@@ -238,7 +239,7 @@ export default function PurchaseOrderForm() {
                     onChange={(event) => updateItem(index, "unitCost", event.target.value)}
                     placeholder="Unit cost"
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-2"
+                    className="rounded-lg border border-slate-200 p-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100 md:col-span-2"
                   />
                   <div className="flex items-center text-sm text-gray-600 md:col-span-2">
                     Subtotal: {money(Number(item.orderedQty || 0) * Number(item.unitCost || 0))}
@@ -262,10 +263,10 @@ export default function PurchaseOrderForm() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <Link to="/purchase-orders" className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50">
+            <Link to="/purchase-orders" className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
               Cancel
             </Link>
-            <button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
+            <button type="submit" disabled={saving} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60">
               {saving ? "Saving..." : "Create PO"}
             </button>
           </div>

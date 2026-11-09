@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowLeftRight } from "lucide-react";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/ui/PageHeader";
+import DataTable from "../components/ui/DataTable";
+import StatusBadge, { statusVariant } from "../components/ui/StatusBadge";
 
 interface BranchRef {
   id: string;
@@ -24,13 +28,6 @@ function errorMessage(error: unknown): string {
     if (axiosError.response?.data?.error) return axiosError.response.data.error;
   }
   return error instanceof Error ? error.message : "Something went wrong";
-}
-
-function statusClass(status: string): string {
-  if (status === "RECEIVED") return "bg-green-100 text-green-800";
-  if (status === "IN_TRANSIT") return "bg-blue-100 text-blue-800";
-  if (status === "CANCELLED") return "bg-red-100 text-red-800";
-  return "bg-gray-100 text-gray-800";
 }
 
 export default function Transfers() {
@@ -70,78 +67,74 @@ export default function Transfers() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Stock Transfers</h1>
-          <p className="text-sm text-gray-500">Move inventory between branches and track transfer status.</p>
+      <PageHeader
+        title="Stock Transfers"
+        subtitle="Move inventory between branches and track transfer status."
+        actions={
+          <Link to="/transfers/new" className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700">
+            Create Transfer
+          </Link>
+        }
+      />
+
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+
+      {/* Status filter card */}
+      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-end gap-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-500" htmlFor="status-filter">
+              Status
+            </label>
+            <select
+              id="status-filter"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+              className="mt-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            >
+              <option value="">All statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="IN_TRANSIT">In Transit</option>
+              <option value="RECEIVED">Received</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
         </div>
-        <Link to="/transfers/new" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-          Create Transfer
-        </Link>
       </div>
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-
-      <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-gray-700" htmlFor="status-filter">
-          Status
-        </label>
-        <select
-          id="status-filter"
-          value={statusFilter}
-          onChange={(event) => setStatusFilter(event.target.value)}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-        >
-          <option value="">All statuses</option>
-          <option value="PENDING">Pending</option>
-          <option value="IN_TRANSIT">In Transit</option>
-          <option value="RECEIVED">Received</option>
-          <option value="CANCELLED">Cancelled</option>
-        </select>
-      </div>
-
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        {loading ? (
-          <div className="p-10 text-center text-sm text-gray-500">Loading transfers...</div>
-        ) : transfers.length === 0 ? (
-          <div className="p-10 text-center text-sm text-gray-500">No transfers found.</div>
-        ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Transfer No</th>
-                <th className="px-4 py-3">From</th>
-                <th className="px-4 py-3">To</th>
-                <th className="px-4 py-3">Qty</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Created</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {transfers.map((transfer) => (
-                <tr key={transfer._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{transfer.transferNo}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{transfer.fromBranch.name || "-"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{transfer.toBranch.name || "-"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{transfer.totalQuantity}</td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-1 text-xs font-semibold ${statusClass(transfer.status)}`}>{transfer.status}</span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    {transfer.createdAt ? new Date(transfer.createdAt).toLocaleDateString() : "-"}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link to={`/transfers/${transfer._id}`} className="text-sm font-medium text-blue-600 hover:underline">
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      <DataTable
+        headers={["Transfer No", "From", "To", "Qty", "Status", "Created", "Actions"]}
+        loading={loading}
+        isEmpty={transfers.length === 0}
+        emptyIcon={ArrowLeftRight}
+        emptyTitle="No transfers found"
+        emptyMessage="Create a transfer to move stock between branches."
+        emptyAction={
+          <Link to="/transfers/new" className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+            Create Transfer
+          </Link>
+        }
+      >
+        {transfers.map((transfer) => (
+          <tr key={transfer._id}>
+            <td className="font-medium text-slate-900">{transfer.transferNo}</td>
+            <td>{transfer.fromBranch.name || "-"}</td>
+            <td>{transfer.toBranch.name || "-"}</td>
+            <td>{transfer.totalQuantity}</td>
+            <td>
+              <StatusBadge variant={statusVariant(transfer.status)}>{transfer.status}</StatusBadge>
+            </td>
+            <td className="text-slate-500">
+              {transfer.createdAt ? new Date(transfer.createdAt).toLocaleDateString() : "-"}
+            </td>
+            <td className="text-right">
+              <Link to={`/transfers/${transfer._id}`} className="text-sm font-medium text-blue-600 hover:underline">
+                View
+              </Link>
+            </td>
+          </tr>
+        ))}
+      </DataTable>
     </div>
   );
 }

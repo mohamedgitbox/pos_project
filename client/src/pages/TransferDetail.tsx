@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/ui/PageHeader";
+import StatusBadge, { statusVariant } from "../components/ui/StatusBadge";
 
 interface Ref { id: string; name: string }
 interface ProductRef extends Ref { SKU: string }
@@ -16,13 +18,6 @@ function errorMessage(error: unknown): string {
     if (e.response?.data?.error) return e.response.data.error;
   }
   return error instanceof Error ? error.message : "Something went wrong";
-}
-
-function statusClass(status: string): string {
-  if (status === "RECEIVED") return "bg-green-100 text-green-800";
-  if (status === "IN_TRANSIT") return "bg-blue-100 text-blue-800";
-  if (status === "CANCELLED") return "bg-red-100 text-red-800";
-  return "bg-gray-100 text-gray-800";
 }
 
 function formatDate(value: string): string {
@@ -79,12 +74,12 @@ export default function TransferDetail() {
     } finally { setActing(false); }
   };
 
-  if (!canManage) return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can view transfers.</div>;
-  if (loading) return <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">Loading transfer...</div>;
+  if (!canManage) return <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can view transfers.</div>;
+  if (loading) return <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">Loading transfer...</div>;
   if (!transfer) {
     return (
       <div className="space-y-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">{error || "Transfer not found."}</div>
+        <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">{error || "Transfer not found."}</div>
         <Link to="/transfers" className="inline-block text-sm font-medium text-blue-600 hover:underline">Back to transfers</Link>
       </div>
     );
@@ -96,24 +91,27 @@ export default function TransferDetail() {
   const canCancel = transfer.status === "PENDING" && canActOnBranch(transfer.fromBranch.id);
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{transfer.transferNo}</h1>
-          <p className="text-sm text-gray-500">Transfer detail and workflow actions.</p>
-        </div>
-        <Link to="/transfers" className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50">
-          Back to Transfers
-        </Link>
-      </div>
+      <PageHeader
+        title={transfer.transferNo}
+        subtitle="Transfer detail and workflow actions."
+        actions={
+          <>
+            <StatusBadge variant={statusVariant(transfer.status)}>{transfer.status}</StatusBadge>
+            <Link to="/transfers" className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              Back to Transfers
+            </Link>
+          </>
+        }
+      />
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Summary</h2>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass(transfer.status)}`}>{transfer.status}</span>
+              <h2 className="text-lg font-semibold text-slate-900">Summary</h2>
+              <StatusBadge variant={statusVariant(transfer.status)}>{transfer.status}</StatusBadge>
             </div>
 
             <div className="mt-4 grid gap-4 text-sm md:grid-cols-2">
@@ -159,7 +157,7 @@ export default function TransferDetail() {
             )}
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-5 py-4">
               <h2 className="text-lg font-semibold text-gray-900">Items</h2>
             </div>
@@ -184,7 +182,7 @@ export default function TransferDetail() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-gray-900">Actions</h2>
           <div className="mt-4 space-y-3">
             {canShip && (
@@ -192,7 +190,7 @@ export default function TransferDetail() {
                 type="button"
                 onClick={() => void changeStatus("SHIP")}
                 disabled={acting}
-                className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+                className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
               >
                 Ship
               </button>
@@ -203,7 +201,7 @@ export default function TransferDetail() {
                 type="button"
                 onClick={() => void changeStatus("RECEIVE")}
                 disabled={acting}
-                className="w-full rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60"
+                className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
               >
                 Receive
               </button>

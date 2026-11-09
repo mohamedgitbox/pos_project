@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/ui/PageHeader";
 
 interface Branch { _id: string; name: string }
 interface StockProduct { productId: string; name: string; SKU: string; quantity: number }
@@ -101,24 +102,24 @@ export default function TransferForm() {
   };
 
   if (!canManage) {
-    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can create transfers.</div>;
+    return <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">Only ADMIN or MANAGER can create transfers.</div>;
   }
 
   if (loading) {
-    return <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500 shadow-sm">Loading transfer form...</div>;
+    return <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">Loading transfer form...</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Create Stock Transfer</h1>
-        <p className="text-sm text-gray-500">Select source branch, destination branch, and items to transfer.</p>
-      </div>
+      <PageHeader
+        title="Create Stock Transfer"
+        subtitle="Select source branch, destination branch, and items to transfer."
+      />
 
-      {error && <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       <form onSubmit={submit} className="space-y-6">
-        <div className="grid gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:grid-cols-2">
+        <div className="grid gap-4 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="fromBranchId">From Branch</label>
             <select
@@ -155,7 +156,7 @@ export default function TransferForm() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Items</h2>
             <button
@@ -173,12 +174,12 @@ export default function TransferForm() {
             {items.map((item, index) => {
               const avail = available[item.productId] ?? 0;
               return (
-                <div key={index} className="grid gap-3 rounded-lg border border-gray-200 p-4 md:grid-cols-12">
+                <div key={index} className="grid gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 md:grid-cols-12">
                   <select
                     value={item.productId}
                     onChange={(event) => updateItem(index, "productId", event.target.value)}
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-7"
+                    className="rounded-lg border border-slate-200 p-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100 md:col-span-7"
                   >
                     <option value="">Select product</option>
                     {stock
@@ -203,7 +204,7 @@ export default function TransferForm() {
                     onChange={(event) => updateItem(index, "quantity", event.target.value)}
                     placeholder="Qty"
                     required
-                    className="rounded border border-gray-300 p-2 text-sm md:col-span-3"
+                    className="rounded-lg border border-slate-200 p-2 text-sm focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-100 md:col-span-3"
                   />
 
                   <button
@@ -226,13 +227,13 @@ export default function TransferForm() {
         </div>
 
         <div className="flex justify-end gap-3">
-          <Link to="/transfers" className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50">
+          <Link to="/transfers" className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving || stockLoading}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
           >
             {saving ? "Creating..." : "Create Transfer"}
           </button>
