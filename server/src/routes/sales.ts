@@ -49,7 +49,7 @@ function fail(res: Response, error: unknown, fallback: string): Response {
     return res.status(409).json({ success: false, error: "Insufficient stock for one or more items" });
   }
   if (isDuplicate(error)) {
-    return res.status(409).json({ success: false, error: "Duplicate invoice or sale record" });
+    return res.status(409).json({ success: false, error: "Duplicate request" });
   }
   console.error(error);
   return res.status(500).json({ success: false, error: fallback });
@@ -77,6 +77,54 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
 
     if (!req.user) {
       return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
+    const idempotencyKey = req.headers["idempotency-key"];
+    const hasIdempotencyKey = typeof idempotencyKey === "string" && idempotencyKey.length > 0;
+
+    if (hasIdempotencyKey) {
+      const existingSale = await Sale.findOne({ idempotencyKey }).lean();
+
+      if (existingSale) {
+        interface ReplaySale {
+          _id: unknown;
+          invoiceNo: string;
+          branchId: unknown;
+          userId: unknown;
+          totalAmount: { toString(): string };
+          timestamp: Date;
+        }
+
+        interface ReplaySaleItem {
+          productId: unknown;
+          quantity: number;
+          price: { toString(): string };
+          subtotal?: { toString(): string };
+        }
+
+        const sale = existingSale as unknown as ReplaySale;
+        const items = (await SaleItem.find({ saleId: sale._id }).lean()) as unknown as ReplaySaleItem[];
+
+        return res.status(200).json({
+          success: true,
+          data: {
+            _id: String(sale._id),
+            invoiceNo: sale.invoiceNo,
+            branchId: String(sale.branchId),
+            userId: String(sale.userId),
+            totalAmount: sale.totalAmount.toString(),
+            timestamp: sale.timestamp.toISOString(),
+            items: items.map((item) => ({
+              productId: String(item.productId),
+              quantity: item.quantity,
+              price: parseFloat(item.price.toString()),
+              subtotal: item.subtotal
+                ? item.subtotal.toString()
+                : new Decimal(item.price.toString()).mul(item.quantity).toFixed(2),
+            })),
+          },
+        });
+      }
     }
 
     const userBranchId = req.user.branchId ? String(req.user.branchId) : null;
@@ -133,6 +181,7 @@ router.post("/", requireRole("ADMIN", "MANAGER", "CASHIER"), async (req: Request
         userId: userObjectId,
         totalAmount: mongoose.Types.Decimal128.fromString(calculatedTotal.toFixed(2)),
         timestamp: new Date(),
+        ...(hasIdempotencyKey ? { idempotencyKey } : {}),
       });
       await sale.save({ session });
 
@@ -337,6 +386,26 @@ router.get("/my-sales", async (req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = z.object({ id: idSchema }).parse(req.params);
+
+    const saleDoc = await Sale.findById(id).lean();
+
+    if (!saleDoc) {
+      return res.status(404).json({ success: false, error: "Sale not found" });
+    }
+
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
+    if (req.user.role === "MANAGER") {
+      if (!req.user.branchId || String(saleDoc.branchId) !== String(req.user.branchId)) {
+        return res.status(403).json({ success: false, error: "You can only view sales for your assigned branch" });
+      }
+    } else if (req.user.role === "CASHIER") {
+      if (String(saleDoc.userId) !== String(req.user._id)) {
+        return res.status(403).json({ success: false, error: "You can only view your own sales" });
+      }
+    }
 
     interface PopulatedSaleSingle {
       _id: unknown;

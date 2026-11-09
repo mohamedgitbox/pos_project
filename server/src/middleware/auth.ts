@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { IUser } from "../models";
+import { JWT_SECRET } from "../config/jwt";
 
 interface TokenPayload {
   _id: string;
@@ -26,7 +27,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret') as TokenPayload;
+      const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
     req.user = decoded as unknown as IUser & { _id: string };
     next();
   } catch {
@@ -39,7 +40,7 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction): 
 
   if (token) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret') as TokenPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
       req.user = decoded as unknown as IUser & { _id: string };
     } catch {
       // ignore

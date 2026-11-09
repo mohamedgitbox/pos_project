@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { authMiddleware } from '../middleware/auth';
+import { JWT_SECRET } from '../config/jwt';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       { _id: user._id, email: user.email, role: user.role, branchId: user.branchId },
-      process.env.JWT_SECRET || 'dev-secret',
+      JWT_SECRET,
       { expiresIn: '7d' }
     );
 
