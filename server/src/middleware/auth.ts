@@ -5,6 +5,7 @@ import { JWT_SECRET } from "../config/jwt";
 
 interface TokenPayload {
   _id: string;
+  name?: string;
   email: string;
   role: string;
   branchId: string | null;

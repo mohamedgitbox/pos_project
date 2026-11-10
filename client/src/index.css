@@ -15,7 +15,7 @@
 @layer components {
   /* Surface card (neumorphic + glass) */
   .card {
-    @apply bg-slate-800 rounded-2xl shadow-neumorphic;
+    @apply bg-slate-800 rounded-2xl shadow-neumorphic p-6;
   }
   .card-glass {
     @apply bg-slate-800/60 rounded-2xl shadow-neumorphic border border-white/5;
