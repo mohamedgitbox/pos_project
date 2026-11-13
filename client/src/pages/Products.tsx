@@ -359,14 +359,14 @@ export default function Products() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800 shadow-sm fade-up">
+        <div className="overflow-x-auto card fade-up">
         {loading ? (
           <div className="p-10 text-center text-sm text-slate-400">Loading products...</div>
         ) : products.length === 0 ? (
           <div className="p-10 text-center text-sm text-slate-400">No products found.</div>
         ) : (
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50 text-left text-xs font-medium uppercase tracking-wide text-slate-400">
+          <table className="tw-table">
+            <thead>
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">SKU</th>
@@ -375,19 +375,19 @@ export default function Products() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {products.map((product) => (
-                <tr key={product._id} className="group hover:bg-slate-700/40 transition-colors">
+                <tr key={product._id} className="group">
                   <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-slate-100">{product.name}</div>
-                    <div className="text-xs text-slate-400">Stock: {product.totalStock}</div>
+                    <div className="text-sm font-medium text-ink">{product.name}</div>
+                    <div className="text-xs text-ink-muted">Stock: {product.totalStock}</div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-300">
+                  <td className="px-4 py-3 text-sm text-ink">
                     <div>{product.SKU}</div>
-                    <div className="text-xs text-slate-400">{product.barcode}</div>
+                    <div className="text-xs text-ink-muted">{product.barcode}</div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{money(product.costPrice)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{money(product.sellingPrice)}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{money(product.costPrice)}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{money(product.sellingPrice)}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-3">
                       <button

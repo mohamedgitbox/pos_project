@@ -84,8 +84,8 @@ export default function PurchaseOrders() {
         ) : orders.length === 0 ? (
           <div className="p-10 text-center text-sm text-slate-400">No purchase orders found.</div>
         ) : (
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+          <table className="tw-table">
+            <thead>
               <tr>
                 <th className="px-4 py-3">PO Number</th>
                 <th className="px-4 py-3">Supplier</th>
@@ -96,17 +96,17 @@ export default function PurchaseOrders() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {orders.map((order) => (
-                <tr key={order._id} className="hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-100">{order.poNumber}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{order.supplierName}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{order.branch.name || "-"}</td>
+                <tr key={order._id}>
+                  <td className="px-4 py-3 text-sm font-medium text-ink">{order.poNumber}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{order.supplierName}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{order.branch.name || "-"}</td>
                   <td className="px-4 py-3">
                     <StatusBadge status={order.status} />
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-amber-500">${money(order.totalCost)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-400">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "-"}</td>
+                  <td className="px-4 py-3 text-sm text-ink-muted">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "-"}</td>
                   <td className="px-4 py-3 text-right">
                     <Link to={`/purchase-orders/${order._id}`} className="text-sm font-medium text-amber-600 hover:text-amber-500 hover:underline">
                       View

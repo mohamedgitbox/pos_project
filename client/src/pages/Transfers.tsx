@@ -100,8 +100,8 @@ export default function Transfers() {
         ) : transfers.length === 0 ? (
           <div className="p-10 text-center text-sm text-slate-400">No transfers found.</div>
         ) : (
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+          <table className="tw-table">
+            <thead>
               <tr>
                 <th className="px-4 py-3">Transfer No</th>
                 <th className="px-4 py-3">From</th>
@@ -112,17 +112,17 @@ export default function Transfers() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {transfers.map((transfer) => (
-                <tr key={transfer._id} className="hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-100">{transfer.transferNo}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{transfer.fromBranch.name || "-"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{transfer.toBranch.name || "-"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{transfer.totalQuantity}</td>
+                <tr key={transfer._id}>
+                  <td className="px-4 py-3 text-sm font-medium text-ink">{transfer.transferNo}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{transfer.fromBranch.name || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{transfer.toBranch.name || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{transfer.totalQuantity}</td>
                   <td className="px-4 py-3">
                     <StatusBadge status={transfer.status} />
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-400">
+                  <td className="px-4 py-3 text-sm text-ink-muted">
                     {transfer.createdAt ? new Date(transfer.createdAt).toLocaleDateString() : "-"}
                   </td>
                   <td className="px-4 py-3 text-right">

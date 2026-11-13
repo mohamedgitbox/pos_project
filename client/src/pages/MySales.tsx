@@ -79,22 +79,22 @@ export default function MySales() {
         <div className="card px-4 py-3 text-sm text-slate-400">No sales found.</div>
       ) : (
         <div className="overflow-x-auto card">
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50">
+          <table className="tw-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Invoice #</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Total</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Timestamp</th>
+                <th className="px-4 py-3">Invoice #</th>
+                <th className="px-4 py-3">Branch</th>
+                <th className="px-4 py-3">Total</th>
+                <th className="px-4 py-3">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {sales.map((sale) => (
-                <tr key={sale._id} className="hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-100">#{sale.invoiceNo}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{sale.branch?.name ?? "Unknown"}</td>
+                <tr key={sale._id}>
+                  <td className="px-4 py-3 text-sm font-medium text-ink">#{sale.invoiceNo}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{sale.branch?.name ?? "Unknown"}</td>
                   <td className="px-4 py-3 text-sm font-medium text-amber-500">${money(sale.totalAmount)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{formatDate(sale.timestamp)}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{formatDate(sale.timestamp)}</td>
                 </tr>
               ))}
             </tbody>

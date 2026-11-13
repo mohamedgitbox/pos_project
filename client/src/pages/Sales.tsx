@@ -176,28 +176,28 @@ export default function Sales() {
         <div className="card px-4 py-3 text-sm text-slate-400">No sales found.</div>
       ) : (
         <div className="overflow-x-auto card">
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50">
+          <table className="tw-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Invoice #</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Cashier</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Total</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Timestamp</th>
+                <th className="px-4 py-3">Invoice #</th>
+                <th className="px-4 py-3">Branch</th>
+                <th className="px-4 py-3">Cashier</th>
+                <th className="px-4 py-3">Total</th>
+                <th className="px-4 py-3">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {sales.map((sale) => (
                 <tr
                   key={sale._id}
                   onClick={() => void openDetail(sale._id)}
-                  className="cursor-pointer hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600"
+                  className="cursor-pointer"
                 >
-                  <td className="px-4 py-3 text-sm font-medium text-slate-100">#{sale.invoiceNo}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{sale.branch?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{sale.user?.name ?? "Unknown"}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-ink">#{sale.invoiceNo}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{sale.branch?.name ?? "Unknown"}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{sale.user?.name ?? "Unknown"}</td>
                   <td className="px-4 py-3 text-sm font-medium text-amber-500">${money(sale.totalAmount)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{formatDate(sale.timestamp)}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{formatDate(sale.timestamp)}</td>
                 </tr>
               ))}
             </tbody>
@@ -265,24 +265,24 @@ export default function Sales() {
                   </div>
                 </div>
                 <div className="overflow-x-auto rounded-lg border border-slate-700">
-                  <table className="min-w-full divide-y divide-slate-700/50">
-                    <thead className="bg-slate-900/60">
+                  <table className="tw-table">
+                    <thead>
                       <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Product</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Qty</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Price</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Subtotal</th>
+                        <th className="px-4 py-2">Product</th>
+                        <th className="px-4 py-2">Qty</th>
+                        <th className="px-4 py-2">Price</th>
+                        <th className="px-4 py-2">Subtotal</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+                    <tbody>
                       {detail.items.map((item) => (
                         <tr key={item._id}>
-                          <td className="px-4 py-2 text-sm text-slate-100">
+                          <td className="px-4 py-2 text-sm text-ink">
                             {item.product ? `${item.product.name} (${item.product.SKU})` : "Deleted product"}
                           </td>
-                          <td className="px-4 py-2 text-sm text-slate-300">{item.quantity}</td>
-                          <td className="px-4 py-2 text-sm text-slate-300">${money(item.price)}</td>
-                          <td className="px-4 py-2 text-sm text-slate-100">${money(item.subtotal)}</td>
+                          <td className="px-4 py-2 text-sm text-ink">{item.quantity}</td>
+                          <td className="px-4 py-2 text-sm text-ink">${money(item.price)}</td>
+                          <td className="px-4 py-2 text-sm text-ink">${money(item.subtotal)}</td>
                         </tr>
                       ))}
                     </tbody>

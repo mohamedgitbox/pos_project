@@ -176,27 +176,27 @@ export default function Users() {
         <div className="card px-4 py-3 text-sm text-slate-400">No users found.</div>
       ) : (
         <div className="overflow-x-auto card">
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50">
+          <table className="tw-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Name</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Email</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Role</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Created</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-500">Actions</th>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Email</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Branch</th>
+                <th className="px-4 py-3">Created</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {users.map((user) => (
-                <tr key={user._id} className="hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-100">{user.name}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{user.email}</td>
+                <tr key={user._id}>
+                  <td className="px-4 py-3 text-sm font-medium text-ink">{user.name}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{user.email}</td>
                   <td className="px-4 py-3 text-sm">
                     <StatusBadge status={user.role} />
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{user.branchName ?? "—"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{formatDate(user.createdAt)}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{user.branchName ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{formatDate(user.createdAt)}</td>
                   <td className="px-4 py-3 text-right text-sm">
                     <button onClick={() => edit(user)} className="mr-2 text-amber-600 hover:text-amber-500">
                       Edit

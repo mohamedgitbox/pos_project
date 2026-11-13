@@ -82,8 +82,8 @@ export default function Inventory() {
   return (
     <div className="space-y-6 fade-up">
       <div>
-        <h1 className="text-2xl font-bold text-slate-50 tracking-tight">Inventory</h1>
-        <p className="text-sm text-slate-400">Stock levels across branches (items under {LOW_STOCK_THRESHOLD} units are highlighted).</p>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Inventory</h1>
+        <p className="text-sm text-[#93a7bc]">Stock levels across branches (items under {LOW_STOCK_THRESHOLD} units are highlighted).</p>
       </div>
 
       <div className="card p-4 flex flex-wrap items-end gap-3">
@@ -107,34 +107,34 @@ export default function Inventory() {
         </div>
       </div>
 
-      {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
+      {error && <div className="rounded-md bg-[#ff8fa0]/10 border border-[#ff8fa0]/20 px-4 py-3 text-sm text-[#ff8fa0]">{error}</div>}
 
       {loading ? (
-        <div className="text-sm text-slate-400">Loading inventory...</div>
+        <div className="text-sm text-[#93a7bc]">Loading inventory...</div>
       ) : rows.length === 0 ? (
-        <div className="card px-4 py-3 text-sm text-slate-400">No inventory records found.</div>
+        <div className="card px-4 py-3 text-sm text-[#93a7bc]">No inventory records found.</div>
       ) : (
         <div className="overflow-x-auto card">
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50">
+          <table className="tw-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Product</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">SKU</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Branch</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Cost</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Price</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Quantity</th>
+                <th className="px-4 py-3">Product</th>
+                <th className="px-4 py-3">SKU</th>
+                <th className="px-4 py-3">Branch</th>
+                <th className="px-4 py-3">Cost</th>
+                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Quantity</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {rows.map((row) => (
-                <tr key={row._id} className="group hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-100">{row.product?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{row.product?.SKU ?? "-"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{row.branch?.name ?? "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">${money(row.product?.costPrice ?? "0")}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">${money(row.product?.sellingPrice ?? "0")}</td>
-                  <td className={`px-4 py-3 text-sm font-semibold ${row.quantity < LOW_STOCK_THRESHOLD ? "text-red-400 bg-red-500/10" : "text-emerald-400"}`}>
+                <tr key={row._id} className="group">
+                  <td className="px-4 py-3 text-sm font-medium text-[#dcecf5]">{row.product?.name ?? "Unknown"}</td>
+                  <td className="px-4 py-3 text-sm text-[#dcecf5]">{row.product?.SKU ?? "-"}</td>
+                  <td className="px-4 py-3 text-sm text-[#dcecf5]">{row.branch?.name ?? "Unknown"}</td>
+                  <td className="px-4 py-3 text-sm text-[#dcecf5]">${money(row.product?.costPrice ?? "0")}</td>
+                  <td className="px-4 py-3 text-sm text-[#dcecf5]">${money(row.product?.sellingPrice ?? "0")}</td>
+                  <td className={`px-4 py-3 text-sm font-semibold ${row.quantity < LOW_STOCK_THRESHOLD ? "text-[#ff8fa0] bg-[#ff8fa0]/10" : "text-emerald-400"}`}>
                     {row.quantity}
                   </td>
                 </tr>
@@ -145,7 +145,7 @@ export default function Inventory() {
       )}
 
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-slate-400">
+        <div className="flex items-center justify-between text-sm text-[#93a7bc]">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total} total)
           </span>

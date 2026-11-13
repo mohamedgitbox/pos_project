@@ -14,6 +14,7 @@ export default {
           DEFAULT: '#d97706',
           600: '#d97706',
         },
+        accentText: '#fbbf24',
         navy: {
           950: '#071629',
           800: '#102a43',

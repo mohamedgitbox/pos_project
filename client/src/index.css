@@ -8,7 +8,7 @@
   }
   body {
     @apply bg-slate-900 text-slate-50 font-sans;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
   }
 }
 
@@ -34,6 +34,33 @@
   /* Inset input / search well */
   .input-well {
     @apply bg-navy-800 border border-navy-700 rounded-lg text-ink placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors;
+  }
+
+  /* Tillwave data table — shared by DataTable and all page tables */
+  .tw-table {
+    @apply min-w-full;
+  }
+  .tw-table thead tr {
+    @apply border-b border-white/10;
+  }
+  .tw-table th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-muted;
+  }
+  .tw-table td {
+    @apply px-4 py-3 text-sm text-ink;
+  }
+  .tw-table tbody tr {
+    background: transparent;
+    transition:
+      background-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .tw-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .tw-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 2px 0 0 #d97706;
   }
 
   /* Uppercase micro-label */
@@ -65,10 +92,18 @@
 
 @layer utilities {
   /* Staggered entrance delay helpers */
-  .delay-100 { animation-delay: 100ms; }
-  .delay-200 { animation-delay: 200ms; }
-  .delay-300 { animation-delay: 300ms; }
-  .delay-400 { animation-delay: 400ms; }
+  .delay-100 {
+    animation-delay: 100ms;
+  }
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+  .delay-400 {
+    animation-delay: 400ms;
+  }
 
   /* Card/row lift on hover */
   .lift {
@@ -102,7 +137,8 @@
 }
 
 @keyframes pulseSoft {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -123,27 +159,65 @@
 }
 
 @media print {
-  body * {
-    visibility: hidden;
+  html, body {
+    background: #fff !important;
+    height: auto !important;
+    overflow: visible !important;
   }
+
+  /* 1) اطوي التطبيق كله — مفيش عنصر ياخد مكان */
+  body * {
+    display: none !important;
+  }
+
+  /* 2) رجّع بس سلسلة الأجداد بتاعة الـ receipt (عشان ميختفيش جوه container مخفي)
+     ونضّفها: مفيش padding/margin/position fixed/modal backdrop */
+  body:has(#receipt),
+  body:has(#receipt) *:has(#receipt) {
+    display: block !important;
+    position: static !important;
+    top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
+    width: auto !important; height: auto !important; max-height: none !important;
+    padding: 0 !important; margin: 0 !important;
+    overflow: visible !important;
+    background: none !important; border: none !important; box-shadow: none !important;
+  }
+
+  /* 3) رجّع عرض العناصر جوه الـ receipt لطبيعته (table يفضل table مش block) */
   #receipt,
   #receipt * {
-    visibility: visible;
+    display: revert !important;
   }
+
+  /* 4) ورقة الـ receipt: في نص الورقة */
   #receipt {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    border: none;
-    box-shadow: none;
+    display: block !important;
+    width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 4mm 3mm !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+    border: none !important; box-shadow: none !important;
   }
+
+  #receipt button, #receipt a, #receipt input, #receipt select, #receipt .no-print {
+    display: none !important;
+  }
+
   #receipt * {
-    color: #000000 !important;
-    background: #ffffff !important;
-    border-color: #d1d5db !important;
+    color: #000 !important;
+    background: transparent !important;
+    text-shadow: none !important;
   }
-  @page {
-    margin: 10mm;
-  }
+
+  #receipt table { width: 100% !important; border-collapse: collapse !important; margin: 2mm 0 !important; }
+  #receipt th, #receipt td { padding: 1mm 0 !important; border: none !important; font-size: 11px !important; text-align: left !important; }
+  #receipt thead th { border-bottom: 1px solid #000 !important; font-weight: 700 !important; }
+  #receipt tfoot td, #receipt .receipt-total { border-top: 1px dashed #000 !important; font-weight: 700 !important; padding-top: 2mm !important; }
+  #receipt tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+  @page { margin: 6mm; }
 }

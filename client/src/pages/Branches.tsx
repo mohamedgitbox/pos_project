@@ -225,23 +225,23 @@ export default function Branches() {
         <div className="card px-4 py-3 text-sm text-slate-400">No branches found.</div>
       ) : (
         <div className="overflow-x-auto card">
-          <table className="min-w-full divide-y divide-slate-700/50">
-            <thead className="bg-slate-800/50">
+          <table className="tw-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Name</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Type</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Location</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Phone</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-500">Actions</th>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Type</th>
+                <th className="px-4 py-3">Location</th>
+                <th className="px-4 py-3">Phone</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+            <tbody>
               {branches.map((branch) => (
-                <tr key={branch._id} className="hover:bg-slate-700/40 transition-colors border-l-2 border-l-transparent hover:border-l-amber-600">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-100">{branch.name}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{branch.type}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{branch.location}</td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{branch.phone}</td>
+                <tr key={branch._id}>
+                  <td className="px-4 py-3 text-sm font-medium text-ink">{branch.name}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{branch.type}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{branch.location}</td>
+                  <td className="px-4 py-3 text-sm text-ink">{branch.phone}</td>
                   <td className="px-4 py-3 text-right text-sm">
                     <button
                       onClick={() => edit(branch)}

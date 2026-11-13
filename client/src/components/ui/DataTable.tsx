@@ -45,13 +45,13 @@ export function DataTable<T extends { _id: string | number }>({
 
   return (
     <div className={`card fade-up ${className}`}>
-      <table className="w-full">
-        <thead className="bg-navy-800/50">
+      <table className="tw-table">
+        <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="px-6 py-4 text-left label"
+                className="px-6 py-4"
                 style={{ minWidth: "120px" }}
               >
                 {col.header}
@@ -59,16 +59,12 @@ export function DataTable<T extends { _id: string | number }>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-navy-700/50">
+        <tbody>
           {data.map((item, idx) => (
             <tr
               key={String(item._id)}
               onClick={() => onRowClick?.(item)}
-              className={`group transition-colors ${
-                onRowClick
-                  ? "cursor-pointer hover:bg-navy-700/40"
-                  : ""
-              }`}
+              className={`group ${onRowClick ? "cursor-pointer" : ""}`}
               style={{
                 animation: `fadeUp 0.3s ease-out ${idx * 50}ms`,
               }}

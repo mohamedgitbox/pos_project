@@ -171,8 +171,8 @@ export default function PurchaseOrderDetail() {
           </div>
 
           <div className="overflow-hidden card">
-            <table className="min-w-full divide-y divide-slate-700/50">
-              <thead className="bg-slate-800/50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+            <table className="tw-table">
+              <thead>
                 <tr>
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">Qty</th>
@@ -180,21 +180,21 @@ export default function PurchaseOrderDetail() {
                   <th className="px-4 py-3 text-right">Subtotal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+              <tbody>
                 {po.items.map((item) => (
                   <tr key={item._id}>
                     <td className="px-4 py-3">
-                      <div className="text-sm font-medium text-slate-100">
+                      <div className="text-sm font-medium text-ink">
                         {item.product.name}
                       </div>
-                      <div className="text-xs text-slate-400">
+                      <div className="text-xs text-ink-muted">
                         {item.product.SKU}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-300">
+                    <td className="px-4 py-3 text-sm text-ink">
                       {item.orderedQty}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-300">
+                    <td className="px-4 py-3 text-sm text-ink">
                       {money(item.unitCost)}
                     </td>
                     <td className="px-4 py-3 text-right text-sm font-medium text-amber-500">

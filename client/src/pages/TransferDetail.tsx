@@ -157,20 +157,20 @@ export default function TransferDetail() {
             <div className="border-b border-slate-700 px-5 py-4">
               <h2 className="text-lg font-semibold text-slate-50">Items</h2>
             </div>
-            <table className="min-w-full divide-y divide-slate-700/50">
-              <thead className="bg-slate-800/50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+            <table className="tw-table">
+              <thead>
                 <tr>
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">SKU</th>
                   <th className="px-4 py-3 text-right">Quantity</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+              <tbody>
                 {transfer.items.map((item) => (
                   <tr key={item._id}>
-                    <td className="px-4 py-3 text-sm font-medium text-slate-100">{item.product.name}</td>
-                    <td className="px-4 py-3 text-sm text-slate-400">{item.product.SKU}</td>
-                    <td className="px-4 py-3 text-right text-sm text-slate-300">{item.quantity}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-ink">{item.product.name}</td>
+                    <td className="px-4 py-3 text-sm text-ink-muted">{item.product.SKU}</td>
+                    <td className="px-4 py-3 text-right text-sm text-ink">{item.quantity}</td>
                   </tr>
                 ))}
               </tbody>
