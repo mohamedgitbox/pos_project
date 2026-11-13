@@ -61,14 +61,14 @@ export default function Reports() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">
+      <div className="rounded-lg border border-danger/20 bg-danger/10 p-6 text-danger">
         {error}
       </div>
     );
@@ -77,11 +77,11 @@ export default function Reports() {
   return (
     <div className="space-y-6 fade-up">
       <div>
-        <h1 className="text-2xl font-bold text-slate-50 tracking-tight">Reports</h1>
-        <p className="text-sm text-slate-400">Overview of sales and stock performance.</p>
+        <h1 className="text-2xl font-bold text-ink tracking-tight">Reports</h1>
+        <p className="text-sm text-ink-muted">Overview of sales and stock performance.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
@@ -98,11 +98,11 @@ export default function Reports() {
       </div>
 
       <div className="digital-frame fade-up delay-200">
-        <div className="rounded-xl bg-slate-800 p-6">
-          <h2 className="text-lg font-semibold text-slate-50 mb-4">Sales by Branch (Last 7 Days)</h2>
+        <div className="rounded-xl bg-navy-800 p-6">
+          <h2 className="text-lg font-semibold text-ink mb-4">Sales by Branch (Last 7 Days)</h2>
           {dashboardData?.salesByBranch && dashboardData.salesByBranch.length > 0 ? (
             <>
-              <div className="h-64">
+              <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={dashboardData.salesByBranch.map((item) => ({
@@ -110,30 +110,30 @@ export default function Reports() {
                       sales: parseFloat(item.total),
                     }))}
                   >
-                    <XAxis dataKey="branch" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
+                    <XAxis dataKey="branch" stroke="#93a7bc" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#93a7bc" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "8px", color: "#f8fafc" }}
-                      itemStyle={{ color: "#d97706" }}
+                      contentStyle={{ backgroundColor: "#071629", borderColor: "#173857", borderRadius: "8px", color: "#dcecf5" }}
+                      itemStyle={{ color: "#fbbf24" }}
                       formatter={(value: number) => [`$${value.toFixed(2)}`, "Sales"]}
                     />
                     <Bar dataKey="sales" fill="#d97706" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="mt-4 overflow-x-auto rounded-lg border border-slate-700">
-                <table className="min-w-full divide-y divide-slate-700/50">
-                  <thead className="bg-slate-900/60">
+              <div className="mt-4 overflow-x-auto rounded-lg border border-navy-700">
+                <table className="min-w-full divide-y divide-navy-700/50">
+                  <thead className="bg-navy-950/60">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Branch</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Sales</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-ink-muted">Branch</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-ink-muted">Sales</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700/50 bg-slate-800">
+                  <tbody className="divide-y divide-navy-700/50 bg-navy-800">
                     {dashboardData.salesByBranch.map((item) => (
-                      <tr key={item.branchName} className="hover:bg-slate-700/40 transition-colors">
-                        <td className="px-4 py-2 text-sm text-slate-300">{item.branchName}</td>
-                        <td className="px-4 py-2 text-sm font-medium text-amber-500">${money(item.total)}</td>
+                      <tr key={item.branchName} className="hover:bg-navy-700/40 transition-colors">
+                        <td className="px-4 py-2 text-sm text-ink">{item.branchName}</td>
+                        <td className="px-4 py-2 text-sm font-medium text-accentText">${money(item.total)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -141,7 +141,7 @@ export default function Reports() {
               </div>
             </>
           ) : (
-            <div className="rounded-md bg-slate-900/40 px-4 py-3 text-sm text-slate-400">No sales data for the last 7 days.</div>
+            <div className="rounded-md bg-navy-950/40 px-4 py-3 text-sm text-ink-muted">No sales data for the last 7 days.</div>
           )}
         </div>
       </div>

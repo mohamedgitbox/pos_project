@@ -15,10 +15,10 @@
 @layer components {
   /* Surface card (neumorphic + glass) */
   .card {
-    @apply bg-slate-800 rounded-2xl shadow-neumorphic p-6;
+    @apply bg-navy-800 rounded-2xl shadow-neumorphic p-6;
   }
   .card-glass {
-    @apply bg-slate-800/60 rounded-2xl shadow-neumorphic border border-white/5;
+    @apply bg-navy-800/60 rounded-2xl shadow-neumorphic border border-white/5;
   }
 
   /* Digital frame for large preview surfaces (charts, big tables) */
@@ -33,28 +33,28 @@
 
   /* Inset input / search well */
   .input-well {
-    @apply bg-slate-900/60 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600/50 focus:border-amber-600/50 transition-colors;
+    @apply bg-navy-800 border border-navy-700 rounded-lg text-ink placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors;
   }
 
   /* Uppercase micro-label */
   .label {
-    @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
+    @apply text-xs font-semibold uppercase tracking-wider text-ink-muted;
   }
 
   /* Shimmer skeleton row */
   .skeleton-row {
-    @apply bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 bg-[length:200%_100%];
+    @apply bg-gradient-to-r from-navy-700 via-navy-600 to-navy-700 bg-[length:200%_100%];
     animation: shimmer 2s infinite linear;
   }
 
   /* Primary button */
   .btn-primary {
-    @apply bg-amber-600 hover:bg-amber-500 text-white font-medium rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
+    @apply bg-accent hover:bg-accent/90 text-ink font-medium rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
   }
 
   /* Secondary / outline button */
   .btn-secondary {
-    @apply border border-slate-600 hover:bg-slate-700 text-slate-200 font-medium rounded-lg transition-colors;
+    @apply border border-navy-600 hover:bg-navy-700 text-ink font-medium rounded-lg transition-colors;
   }
 
   /* Danger button */
@@ -137,6 +137,11 @@
     width: 100%;
     border: none;
     box-shadow: none;
+  }
+  #receipt * {
+    color: #000000 !important;
+    background: #ffffff !important;
+    border-color: #d1d5db !important;
   }
   @page {
     margin: 10mm;

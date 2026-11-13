@@ -46,7 +46,7 @@ export function DataTable<T extends { _id: string | number }>({
   return (
     <div className={`card fade-up ${className}`}>
       <table className="w-full">
-        <thead className="bg-slate-800/50">
+        <thead className="bg-navy-800/50">
           <tr>
             {columns.map((col) => (
               <th
@@ -59,14 +59,14 @@ export function DataTable<T extends { _id: string | number }>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-700/50">
+        <tbody className="divide-y divide-navy-700/50">
           {data.map((item, idx) => (
             <tr
               key={String(item._id)}
               onClick={() => onRowClick?.(item)}
               className={`group transition-colors ${
                 onRowClick
-                  ? "cursor-pointer hover:bg-slate-700/40"
+                  ? "cursor-pointer hover:bg-navy-700/40"
                   : ""
               }`}
               style={{
@@ -76,7 +76,7 @@ export function DataTable<T extends { _id: string | number }>({
               {columns.map((col) => (
                 <td
                   key={col.key}
-                  className="px-6 py-4 align-middle text-sm text-slate-300"
+                  className="px-6 py-4 align-middle text-sm text-ink"
                 >
                   {col.render ? col.render(item) : String(item[col.key as keyof T])}
                 </td>

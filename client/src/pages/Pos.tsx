@@ -193,7 +193,7 @@ export default function Pos() {
 
   if (!canUsePos) {
     return (
-      <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-6 text-red-400">
+      <div className="rounded-lg border border-danger/20 bg-danger/10 p-6 text-danger">
         Only ADMIN, MANAGER, or CASHIER can use the POS.
       </div>
     );
@@ -203,7 +203,7 @@ export default function Pos() {
     <div className="grid gap-6 lg:grid-cols-3 fade-up">
       <div className="space-y-4 lg:col-span-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold text-slate-50 tracking-tight">POS</h1>
+          <h1 className="text-2xl font-bold text-ink tracking-tight">POS</h1>
           {!user?.branchId && (
             <select
               value={selectedBranchId}
@@ -227,30 +227,30 @@ export default function Pos() {
           className="input-well w-full px-3 py-2 text-sm"
         />
 
-        {error && <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{error}</div>}
+        {error && <div className="rounded-md bg-danger/10 border border-danger/20 px-4 py-3 text-sm text-danger">{error}</div>}
 
         {loading ? (
-          <div className="card p-10 text-center text-sm text-slate-400">
+          <div className="card p-10 text-center text-sm text-ink-muted">
             Loading products...
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="card p-10 text-center text-sm text-slate-400">
+          <div className="card p-10 text-center text-sm text-ink-muted">
             No products found.
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
             {filteredProducts.map((product) => (
               <button
                 key={product._id}
                 type="button"
                 onClick={() => addToCart(product)}
                 disabled={product.stock <= 0}
-                className="lift rounded-xl border border-slate-700 bg-slate-800 p-4 text-left shadow-sm transition hover:border-amber-600/50 hover:bg-slate-700/60 disabled:cursor-not-allowed disabled:opacity-60"
+                className="lift rounded-xl border border-navy-700 bg-navy-800 p-4 text-left shadow-sm transition hover:border-accent hover:bg-navy-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <div className="text-sm font-semibold text-slate-100">{product.name}</div>
-                <div className="mt-1 text-xs text-slate-400">{product.SKU}</div>
-                <div className="mt-3 text-sm font-bold text-amber-500">{money(product.sellingPrice)}</div>
-                <div className="mt-1 text-xs text-slate-400">Stock: {product.stock}</div>
+                <div className="text-sm font-semibold text-ink">{product.name}</div>
+                <div className="mt-1 text-xs text-ink-muted">{product.SKU}</div>
+                <div className="mt-3 text-sm font-bold text-accentText">{money(product.sellingPrice)}</div>
+                <div className="mt-1 text-xs text-ink-muted">Stock: {product.stock}</div>
               </button>
             ))}
           </div>
@@ -259,35 +259,35 @@ export default function Pos() {
 
       <div className="space-y-4">
         <div className="card p-4">
-          <h2 className="text-lg font-semibold text-slate-50">Cart</h2>
+          <h2 className="text-lg font-semibold text-ink">Cart</h2>
 
           {cart.length === 0 ? (
-            <div className="py-10 text-center text-sm text-slate-400">Cart is empty.</div>
+            <div className="py-10 text-center text-sm text-ink-muted">Cart is empty.</div>
           ) : (
             <div className="mt-4 space-y-3">
               {cart.map((item) => (
-                <div key={item._id} className="border-b border-slate-700/50 pb-3">
+                <div key={item._id} className="border-b border-navy-700/50 pb-3">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="text-sm font-medium text-slate-100">{item.name}</div>
-                    <div className="text-sm font-semibold text-slate-100">
+                    <div className="text-sm font-medium text-ink min-w-0">{item.name}</div>
+                    <div className="text-sm font-semibold text-ink whitespace-nowrap">
                       {money(Number(item.sellingPrice) * item.quantity)}
                     </div>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <div className="text-xs text-slate-400">{money(item.sellingPrice)} each</div>
-                    <div className="flex items-center gap-2">
+                    <div className="text-xs text-ink-muted min-w-0">{money(item.sellingPrice)} each</div>
+                    <div className="flex items-center gap-2 shrink-0">
                       <button
                         type="button"
                         onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                        className="h-7 w-7 rounded border border-slate-600 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                        className="h-7 w-7 rounded border border-navy-600 text-sm text-ink hover:bg-navy-700 transition-colors"
                       >
                         -
                       </button>
-                      <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                      <span className="w-8 text-center text-sm font-medium text-ink">{item.quantity}</span>
                       <button
                         type="button"
                         onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        className="h-7 w-7 rounded border border-slate-600 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                        className="h-7 w-7 rounded border border-navy-600 text-sm text-ink hover:bg-navy-700 transition-colors"
                       >
                         +
                       </button>
@@ -296,7 +296,7 @@ export default function Pos() {
                 </div>
               ))}
 
-              <div className="flex items-center justify-between pt-2 text-base font-bold text-slate-50">
+              <div className="flex items-center justify-between pt-2 text-base font-bold text-ink">
                 <span>Total</span>
                 <span>{money(total)}</span>
               </div>
@@ -305,7 +305,7 @@ export default function Pos() {
                 type="button"
                 onClick={() => void checkout()}
                 disabled={checkingOut || cart.length === 0 || !branchId}
-                className="w-full rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-500 transition-colors shadow-lg shadow-amber-600/20 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-ink hover:opacity-90 transition-colors shadow-lg shadow-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {checkingOut ? "Processing..." : "Checkout"}
               </button>
@@ -315,45 +315,47 @@ export default function Pos() {
 
         {receipt && (
           <div id="receipt" className="card p-4">
-            <h2 className="text-lg font-semibold text-slate-50">{receipt.branch?.name ?? "Receipt"}</h2>
-            <div className="mt-3 space-y-1 text-sm text-gray-700">
+            <h2 className="text-lg font-semibold text-ink">{receipt.branch?.name ?? "Receipt"}</h2>
+            <div className="mt-3 space-y-1 text-sm text-ink">
               <div>Invoice: {receipt.invoiceNo}</div>
               <div>Cashier: {receipt.user?.name ?? "Unknown"}</div>
-              <div className="text-xs text-slate-400">{new Date(receipt.timestamp).toLocaleString()}</div>
+              <div className="text-xs text-ink-muted">{new Date(receipt.timestamp).toLocaleString()}</div>
             </div>
-            <table className="mt-3 w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
-                  <th className="py-1 pr-2 font-medium">Item</th>
-                  <th className="py-1 pr-2 text-right font-medium">Qty</th>
-                  <th className="py-1 pr-2 text-right font-medium">Price</th>
-                  <th className="py-1 text-right font-medium">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {receipt.items.map((item) => (
-                  <tr key={item.product?._id}>
-                    <td className="py-1 pr-2 text-gray-900">{item.product?.name ?? "Deleted product"}</td>
-                    <td className="py-1 pr-2 text-right text-gray-700">{item.quantity}</td>
-                    <td className="py-1 pr-2 text-right text-gray-700">{money(item.price)}</td>
-                    <td className="py-1 text-right text-gray-900">{money(item.subtotal)}</td>
+            <div className="mt-3 overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b border-navy-600 text-left text-xs uppercase tracking-wide text-ink-muted">
+                    <th className="py-1 pr-2 font-medium">Item</th>
+                    <th className="py-1 pr-2 text-right font-medium">Qty</th>
+                    <th className="py-1 pr-2 text-right font-medium">Price</th>
+                    <th className="py-1 text-right font-medium">Subtotal</th>
                   </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-t border-gray-300 text-base font-bold text-gray-900">
-                  <td className="py-2 pr-2">Total</td>
-                  <td />
-                  <td />
-                  <td className="py-2 text-right">{money(receipt.totalAmount)}</td>
-                </tr>
-              </tfoot>
-            </table>
-            <div className="mt-3 text-center text-sm text-gray-500">Thank you for your purchase!</div>
+                </thead>
+                <tbody className="divide-y divide-navy-700/50">
+                  {receipt.items.map((item) => (
+                    <tr key={item.product?._id}>
+                      <td className="py-1 pr-2 text-ink">{item.product?.name ?? "Deleted product"}</td>
+                      <td className="py-1 pr-2 text-right text-ink">{item.quantity}</td>
+                      <td className="py-1 pr-2 text-right text-ink">{money(item.price)}</td>
+                      <td className="py-1 text-right text-ink">{money(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t border-navy-600 text-base font-bold text-ink">
+                    <td className="py-2 pr-2">Total</td>
+                    <td />
+                    <td />
+                    <td className="py-2 text-right">{money(receipt.totalAmount)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div className="mt-3 text-center text-sm text-ink-muted">Thank you for your purchase!</div>
             <button
               type="button"
               onClick={() => window.print()}
-              className="print:hidden mt-4 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
+              className="print:hidden mt-4 rounded-md border border-navy-600 px-3 py-1.5 text-sm font-medium text-ink hover:bg-navy-700"
             >
               Print Receipt
             </button>

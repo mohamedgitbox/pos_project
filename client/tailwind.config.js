@@ -14,6 +14,18 @@ export default {
           DEFAULT: '#d97706',
           600: '#d97706',
         },
+        navy: {
+          950: '#071629',
+          800: '#102a43',
+          700: '#173857',
+          600: '#21496d',
+        },
+        ink: {
+          DEFAULT: '#dcecf5',
+          soft: '#dcecf5',
+          muted: '#93a7bc',
+        },
+        danger: '#ff8fa0',
       },
       boxShadow: {
         neumorphic: '0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
